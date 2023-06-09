@@ -23,6 +23,7 @@ llm = OpenAI(temperature=0, openai_api_key=settings.openai_api_key)
 chain = load_qa_chain(llm, chain_type="stuff")
 
 logger = getLogger()
+AIRBYTE_MASTER_URL = "https://raw.githubusercontent.com/airbytehq/airbyte/master/airbyte-integrations/connectors"
 
 
 def load_json_from_file(filename):
@@ -40,19 +41,11 @@ def load_json_from_s3(filename):
 def get_base_url(domain_base_url):
     query = "What is the most likely base url. Some endpoints include a version like /0/, /v0/. Give me the url (including https://) and nothing else"
     response = get_langchain_response(domain_base_url, query)
-
-    if '/v1' in response:
-        return response.split('/v1')[0] + '/v1'
-    elif '/v2' in response:
-        return response.split('/v2')[0] + '/v2'
-    elif '/v3' in response:
-        return response.split('/v3')[0] + '/v3'
-    elif '/api' in response:
-        return response.split('/api')[0] + '/api'
-    elif '.com' in response:
-        return response.split('.com')[0] + '.com'
-    else:
-        return response
+    URL_PARTS = ['/v1', '/v2', '/v3', '/api', '.com']
+    for part in URL_PARTS:
+        if part in response:
+            return response.split(part)[0] + part
+    return response
 
 
 def find_best_response(response, options):
@@ -146,25 +139,23 @@ def find_airbyte_requester_block(data):
 
 
 def extract_airbyte_requester_block(connector_name):
-    connector_name = connector_name.lower()
+    connector_name = connector_name.lower().replace(" ", "-").replace("_", "-")
+    connector_file_name = connector_name.replace('-', '_')
 
-    connector_folder_name = connector_name.replace(" ", "-").replace("_", "-")
-    connector_file_name = connector_folder_name.replace('-', '_')
+    url = f"{AIRBYTE_MASTER_URL}/source-{connector_name}/source_{connector_file_name}/manifest.yaml"
 
-    url = f"https://raw.githubusercontent.com/airbytehq/airbyte/master/airbyte-integrations/connectors/source-{connector_folder_name}/source_{connector_file_name}/manifest.yaml"
-
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        try:
-            data = yaml.safe_load(response.text)
-            auth_block = find_airbyte_requester_block(data)
-            return auth_block if auth_block is not None else {}
-        except Exception as e:
-            return {}
-    else:
-        logger.error('\nFailed to fetch file for {}, status code: {}'.format(
-            connector_name, response.status_code))
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        logger.error(f'Failed to fetch file for {connector_name}, status code: {response.status_code}')
+        return {}
+    
+    try:
+        data = yaml.safe_load(response.text)
+        auth_block = find_airbyte_requester_block(data)
+        return auth_block if auth_block is not None else {}
+    except Exception as e:
         return {}
 
 
