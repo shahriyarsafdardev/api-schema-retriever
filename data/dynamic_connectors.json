@@ -1,0 +1,1060 @@
+[
+    {
+        "name": "AudienceProject",
+        "base_url": "https://docs.audiencereport.com/audiencereport-api/",
+        "start_url": "https://docs.audiencereport.com/audiencereport-api/#api-Campaign-PostCampaignLabels",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "links - url changes"
+    },
+    {
+        "name": "Salesforce Marketing Cloud",
+        "base_url": "https://developer.salesforce.com/docs/marketing/marketing-cloud",
+        "start_url": "https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/apis-overview",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "links - url changes"
+    },
+    {
+        "name": "Salesforce Commerce Cloud",
+        "base_url": "https://documentation.b2c.commercecloud.salesforce.com",
+        "start_url": "https://documentation.b2c.commercecloud.salesforce.com/DOC1/index.jsp",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "links - url doesn't change"
+    },
+    {
+        "name": "Outbrain-Amplify",
+        "base_url": "https://developer.outbrain.com/home-page/amplify-api/documentation",
+        "start_url": "https://developer.outbrain.com/home-page/amplify-api/documentation/#/reference/segments",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "broken docs"
+    },
+    {
+        "name": "Databricks",
+        "base_url": "https://docs.databricks.com/dev-tools/api",
+        "start_url": "https://docs.databricks.com/dev-tools/api/index.html",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "labels and buttons - url changes"
+    },
+    {
+        "name": "Fortnox",
+        "base_url": "https://apps.fortnox.se/apidocs",
+        "start_url": "https://apps.fortnox.se/apidocs#section/Documentation",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "labels and buttons - url changes - openapi schema present"
+    },
+    {
+        "name": "Workday Adaptive Insights",
+        "base_url": "https://community.workday.com/sites/default/files/file-hosting/restapi/index.html",
+        "start_url": "https://community.workday.com/sites/default/files/file-hosting/restapi/index.html#absenceManagement/v1/balances",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "labels and buttons - url changes - openapi schema present"
+    },
+    {
+        "name": "Vimeo",
+        "base_url": "https://developer.vimeo.com/api",
+        "start_url": "https://developer.vimeo.com/api/start",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "links - url changes"
+    },
+    {
+        "name": "Holiday API",
+        "base_url": "https://holidayapi.com/docs",
+        "start_url": "https://holidayapi.com/docs",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "links - url changes"
+    },
+    {
+        "name": "Timeplus",
+        "base_url": "https://docs.timeplus.com",
+        "start_url": "https://docs.timeplus.com/rest.html",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 44,
+        "endpoint_count": 47,
+        "dynamic-description": "links - url changes"
+    },
+    {
+        "name": "AWS OpenSearch",
+        "base_url": "https://docs.aws.amazon.com/opensearch-service",
+        "start_url": "https://docs.aws.amazon.com/opensearch-service/index.html",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": [],
+        "dynamic-description": "links - url changes"
+    },
+    {
+        "name": "Moengage",
+        "base_url": "https://developers.moengage.com/hc/en-us",
+        "start_url": "https://developers.moengage.com/hc/en-us/categories/4404541620756-API",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": [],
+        "sphere_endpoints": []
+    },
+    {
+        "name": "Reddit Ads",
+        "base_url": "https://ads-api.reddit.com/docs",
+        "start_url": "https://ads-api.reddit.com/docs/#section/Model-Hierarchy",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "Teamtailor",
+        "base_url": "https://docs.teamtailor.com",
+        "start_url": "https://docs.teamtailor.com/#intro",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "Discourse",
+        "base_url": "https://docs.discourse.org",
+        "start_url": "https://docs.discourse.org/#tag/Site",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "IHS Markit",
+        "base_url": "https://api-docs.globalmarkets.ihsmarkit.com",
+        "start_url": "https://api-docs.globalmarkets.ihsmarkit.com",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "TPL Central",
+        "base_url": "https://api.tplmaps.com/apiportal/#/portal/docs",
+        "start_url": "https://api.tplmaps.com/apiportal/#/portal/docs",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "Quora Ads",
+        "base_url": "https://quoraadsupport.zendesk.com/hc/en-us",
+        "start_url": "https://quoraadsupport.zendesk.com/hc/en-us/categories/115001577787-Getting-Started",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "YouGov BrandIndex",
+        "base_url": "https://business.yougov.com/product",
+        "start_url": "https://business.yougov.com/product/brandindex",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "Beacon CRM",
+        "base_url": "https://developers.beaconcrm.org",
+        "start_url": "https://developers.beaconcrm.org/getting-started.html",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "Greenplum",
+        "base_url": "https://docs.vmware.com/en/VMware-Greenplum/6/greenplum-database",
+        "start_url": "https://docs.vmware.com/en/VMware-Greenplum/6/greenplum-database/landing-index.html",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "Salesforce Marketing Cloud",
+        "base_url": "https://developer.salesforce.com/docs/marketing/marketing-cloud/guide",
+        "start_url": "https://developer.salesforce.com/docs/marketing/marketing-cloud/guide/apis-overview",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "endpoints": []
+    },
+    {
+        "name": "Sisense (Periscope)",
+        "base_url": "https://sisense.dev/guides/rest",
+        "start_url": "https://sisense.dev/guides/rest",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Gem Recruiting",
+        "base_url": "https://api.gem.com/v0/reference",
+        "start_url": "https://api.gem.com/v0/reference",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "SAP S/4HANA Cloud System",
+        "base_url": "https://api.sap.com/api/",
+        "start_url": "https://api.sap.com/package/SAPS4HANACloud/soap",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Google Cloud SQL",
+        "base_url": "https://help.sap.com/docs/SAP_S4HANA_CLOUD/6aa39f1ac05441e5a23f484f31e477e7",
+        "start_url": "https://help.sap.com/docs/SAP_S4HANA_CLOUD/6aa39f1ac05441e5a23f484f31e477e7/e1059ff581854a699f15734049f14293.html",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Munis/municipal ERP & accounting system",
+        "base_url": "https://www.tylertech.com/products/enterprise-erp/api-catalog",
+        "start_url": "https://www.tylertech.com/products/enterprise-erp/api-catalog",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "SAP HANA Source",
+        "base_url": "https://help.sap.com/docs/SAP_HANA_PLATFORM/52715f71adba4aaeb480d946c742d1f6",
+        "start_url": "https://help.sap.com/docs/SAP_HANA_PLATFORM/52715f71adba4aaeb480d946c742d1f6/0e5335b66a9e4c64993605fc24ccd6d1.html",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Bitrix24 CRM",
+        "base_url": "https://training.bitrix24.com/rest_help/crm",
+        "start_url": "https://training.bitrix24.com/rest_help/crm/deals/crm_deal_add.php",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "tune.com",
+        "base_url": "https://developers.tune.com/network",
+        "start_url": "https://developers.tune.com/network",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "judge.me",
+        "base_url": "https://www.judge.me/api/docs",
+        "start_url": "https://www.judge.me/api/docs",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Estoca logistics system",
+        "base_url": "https://www.postman.com/estoca/workspace/estoca-public-workspace",
+        "start_url": "https://www.postman.com/estoca/workspace/estoca-public-workspace/documentation/17693834-7645d1ea-6997-48c1-8fec-689834bd079c",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Reddit",
+        "base_url": "https://www.reddit.com/dev/api",
+        "start_url": "https://www.reddit.com/dev/api",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Tenable.io",
+        "base_url": "https://developer.cisco.com/docs/cloud-security",
+        "start_url": "https://developer.cisco.com/docs/cloud-security/#!investigate-api-api-reference-overview",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Cisco Umbrella",
+        "base_url": "https://developer.cisco.com/docs/cloud-security",
+        "start_url": "https://developer.cisco.com/docs/cloud-security/#!umbrella-api-introduction",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Kaggle Datasets Integration",
+        "base_url": "https://www.kaggle.com/docs/api",
+        "start_url": "https://www.kaggle.com/docs/api",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Appstore",
+        "base_url": "https://developer.apple.com/documentation/appstoreconnectapi",
+        "start_url": "https://developer.apple.com/documentation/appstoreconnectapi",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "IBM Sybase",
+        "base_url": "https://cloud.ibm.com/docs",
+        "start_url": "https://cloud.ibm.com/docs?tab=develop",
+        "airbyte_status": "backlog",
+        "scraped_page_count": 1,
+        "endpoint_count": 0
+    },
+    {
+        "name": "Qualaroo",
+        "base_url": "https://help.qualaroo.com/hc/en-us/articles",
+        "start_url": "https://help.qualaroo.com/hc/en-us/articles/115002231686-Link-Survey-API-Documentation-",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Quickbooks",
+        "base_url": "https://developer.intuit.com/app/developer/qbo/docs/develop",
+        "start_url": "https://developer.intuit.com/app/developer/qbo/docs/develop/basic-implementations",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/v3/company/{{ config.credentials.realm_id }}/query"
+        ]
+    },
+    {
+        "name": "Recreation",
+        "base_url": "https://ridb.recreation.gov/docs",
+        "start_url": "https://ridb.recreation.gov/docs",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/activities",
+            "/campsites",
+            "/events",
+            "/facilities",
+            "/facilityaddresses",
+            "/links",
+            "/media",
+            "/organizations",
+            "/permits",
+            "/recareas",
+            "/recareaaddresses",
+            "/tours"
+        ]
+    },
+    {
+        "name": "Reply-io",
+        "base_url": "https://apidocs.reply.io",
+        "start_url": "https://apidocs.reply.io/#intro",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/campaigns",
+            "/emailAccounts",
+            "/people",
+            "/templates"
+        ]
+    },
+    {
+        "name": "Retently",
+        "base_url": "https://www.retently.com/api",
+        "start_url": "https://www.retently.com/api/#api-get-customers-get",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "campaigns",
+            "companies",
+            "nps/customers",
+            "feedback",
+            "nps/outbox",
+            "reports",
+            "nps/score",
+            "templates"
+        ]
+    },
+    {
+        "name": "Salesforce",
+        "base_url": "https://developer.salesforce.com/docs",
+        "start_url": "https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_what_is_rest_api.htm",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Salesloft",
+        "base_url": "https://developers.salesloft.com/docs",
+        "start_url": "https://developers.salesloft.com/docs/platform/intro",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "users",
+            "people",
+            "cadences",
+            "cadence_memberships",
+            "activities/emails",
+            "activities/calls",
+            "accounts",
+            "account_stages",
+            "account_tiers",
+            "actions",
+            "email_templates",
+            "imports",
+            "notes",
+            "person_stages",
+            "phone_number_assignments",
+            "steps",
+            "team_templates",
+            "team_template_attachments",
+            "email_template_attachments",
+            "crm_activities",
+            "successes",
+            "crm_users",
+            "groups"
+        ]
+    },
+    {
+        "name": "Sap-fieldglass",
+        "base_url": "https://api.sap.com/products/SAPFieldglass",
+        "start_url": "https://api.sap.com/products/SAPFieldglass/apis/all",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/Active Worker Download"
+        ]
+    },
+    {
+        "name": "Sftp-bulk",
+        "base_url": "https://api.sap.com/api/sftpBulkUploadConnector/overview",
+        "start_url": "https://api.sap.com/api/sftpBulkUploadConnector/overview",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Spacex-api",
+        "base_url": "https://docs.spacexdata.com",
+        "start_url": "https://docs.spacexdata.com/#intro",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/launches/{{config['options'] or config['id'] or latest}}",
+            "/capsules",
+            "/company",
+            "/crew",
+            "/cores",
+            "/dragons",
+            "/landpads",
+            "/payloads",
+            "/history",
+            "/rockets",
+            "/roadster",
+            "/ships",
+            "/starlink"
+        ]
+    },
+    {
+        "name": "Tempo",
+        "base_url": "https://apidocs.tempo.io/",
+        "start_url": "https://apidocs.tempo.io/",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "accounts",
+            "customers",
+            "worklogs",
+            "workload-schemes"
+        ]
+    },
+    {
+        "name": "Tiktok-marketing",
+        "base_url": "https://ads.tiktok.com/marketing_api",
+        "start_url": "https://ads.tiktok.com/marketing_api/homepage",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Wikipedia-pageviews",
+        "base_url": "https://wikimedia.org/api/rest_v1",
+        "start_url": "https://wikimedia.org/api/rest_v1/#/Pageviews%20data",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/per-article/{{config.project}}/{{config.access}}/{{config.agent}}/{{config.article}}/daily/{{stream_slice.start_time}}/{{stream_slice.end_time}}",
+            "/top/{{config.project}}/{{config.access}}/{{stream_slice.start_time}}"
+        ]
+    },
+    {
+        "name": "Xero",
+        "base_url": "https://developer.xero.com/documentation/api/accounting",
+        "start_url": "https://developer.xero.com/documentation/api/accounting/overview",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Zoom",
+        "base_url": "https://developers.zoom.us/docs/api/rest/reference/zoom-api",
+        "start_url": "https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#overview",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/users",
+            "/users/{{ stream_slice.parent_id }}/meetings",
+            "/meetings/{{ stream_slice.parent_id }}",
+            "/meetings/{{ stream_slice.parent_id }}/registrants",
+            "/meetings/{{ stream_slice.parent_id }}/polls",
+            "/past_meetings/{{ stream_slice.parent_id }}/polls",
+            "/meetings/{{ stream_slice.parent_id }}/registrants/questions",
+            "/users/{{ stream_slice.parent_id }}/webinars",
+            "/webinars/{{ stream_slice.parent_id }}",
+            "/webinars/{{ stream_slice.parent_id }}/panelists",
+            "/webinars/{{ stream_slice.parent_id }}/registrants",
+            "/past_webinars/{{ stream_slice.parent_uuid }}/absentees",
+            "/webinars/{{ stream_slice.parent_id }}/polls",
+            "/past_webinars/{{ stream_slice.parent_id }}/polls",
+            "/webinars/{{ stream_slice.parent_id }}/registrants/questions",
+            "/webinars/{{ stream_slice.parent_id }}/tracking_sources",
+            "/past_webinars/{{ stream_slice.parent_id }}/qa",
+            "/report/meetings/{{ stream_slice.parent_id }}",
+            "/report/meetings/{{ stream_slice.parent_id }}/participants",
+            "/report/webinars/{{ stream_slice.parent_id }}",
+            "/report/webinars/{{ stream_slice.parent_id }}/participants"
+        ]
+    },
+    {
+        "name": "Zuora",
+        "base_url": "https://www.zuora.com/developer/api-references/api",
+        "start_url": "https://www.zuora.com/developer/api-references/api/overview/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "",
+            "/query/jobs",
+            "/query/jobs/{self.job_id}",
+            ""
+        ]
+    },
+    {
+        "name": "Alloydb-strict-encrypt",
+        "base_url": "https://advertising.amazon.com/API/docs/en-us",
+        "start_url": "https://advertising.amazon.com/API/docs/en-us/info/api-overview",
+        "airbyte_status": "java-connector",
+        "scraped_page_count": 1
+    },
+    {
+        "name": "Amazon-ads",
+        "base_url": "https://advertising.amazon.com/API/docs/en-us",
+        "start_url": "https://advertising.amazon.com/API/docs/en-us/info/api-overview",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Appfollow",
+        "base_url": "https://support.appfollow.io/hc/en-us",
+        "start_url": "https://support.appfollow.io/hc/en-us/articles/360020833017-API-Overview",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "ratings"
+        ]
+    },
+    {
+        "name": "Apple-search-ads",
+        "base_url": "https://developer.apple.com/documentation/apple_search_ads",
+        "start_url": "https://developer.apple.com/documentation/apple_search_ads",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/campaigns",
+            "/campaigns/{{ stream_slice.campaign_id }}/adgroups",
+            "/campaigns/{{ stream_slice.parent_slice.campaign_id }}/adgroups/{{ stream_slice.adgroup_id }}/targetingkeywords",
+            "/reports/campaigns",
+            "/reports/campaigns/{{ stream_slice.campaign_id }}/adgroups",
+            "/reports/campaigns/{{ stream_slice.campaign_id }}/keywords"
+        ]
+    },
+    {
+        "name": "Appstore-singer",
+        "base_url": "https://developer.apple.com/documentation/appstoreconnectapi",
+        "start_url": "https://developer.apple.com/documentation/appstoreconnectapi",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Aws-cloudtrail",
+        "base_url": "https://docs.aws.amazon.com/cloudtrail/",
+        "start_url": "https://docs.aws.amazon.com/cloudtrail/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Babelforce",
+        "base_url": "https://api.babelforce.com/",
+        "start_url": "https://api.babelforce.com/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "calls/reporting"
+        ]
+    },
+    {
+        "name": "Coinmarketcap",
+        "base_url": "https://coinmarketcap.com/api/documentation/v1/",
+        "start_url": "https://coinmarketcap.com/api/documentation/v1/",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "existing_airbyte_endpoints": [
+            "/v1/cryptocurrency/categories",
+            "/v1/cryptocurrency/listings/{{ config['data_type'] or ''}}",
+            "/v1/cryptocurrency/quotes/{{ config['data_type'] or ''}}",
+            "/v1/fiat/map",
+            "/v1/exchange/map"
+        ]
+    },
+    {
+        "name": "Configcat",
+        "base_url": "https://api.configcat.com/docs/",
+        "start_url": "https://api.configcat.com/docs/",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "existing_airbyte_endpoints": [
+            "/organizations",
+            "/products",
+            "/products/{{ stream_slice.productId }}/tags",
+            "/products/{{ stream_slice.productId }}/environments",
+            "/organizations/{{ stream_slice.organizationId }}/members"
+        ]
+    },
+    {
+        "name": "Dockerhub",
+        "base_url": "https://docs.docker.com/docker-hub/api/latest/",
+        "start_url": "https://docs.docker.com/docker-hub/api/latest/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Freshdesk",
+        "base_url": "https://developers.freshdesk.com/v2/docs/data-api/",
+        "start_url": "https://developers.freshdesk.com/v2/docs/data-api/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Freshsales",
+        "base_url": "https://developer.freshsales.io/api/",
+        "start_url": "https://developer.freshsales.io/api/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Freshservice",
+        "base_url": "https://developer.freshservice.com/docs/data-api/",
+        "start_url": "https://developer.freshservice.com/docs/data-api/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Genesys",
+        "base_url": "https://developer.genesys.cloud/",
+        "start_url": "https://developer.genesys.cloud/devapps/api-explorer",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "routing/assessments",
+            "routing/assessments",
+            "routing/queues",
+            "locations",
+            "telephony/providers/edges",
+            "telephony/providers/edges/dids",
+            "telephony/providers/edges/didpools",
+            "telephony/providers/edges/extensions",
+            "telephony/providers/edges/lines",
+            "telephony/providers/edges/outboundroutes",
+            "telephony/providers/edges/phones",
+            "telephony/providers/edges/sites",
+            "telephony/providers/edges/trunks",
+            "stations",
+            "users",
+            "groups"
+        ]
+    },
+    {
+        "name": "Glassfrog",
+        "base_url": "https://documenter.getpostman.com/view/1014385/glassfrog-api-v3/",
+        "start_url": "https://documenter.getpostman.com/view/1014385/glassfrog-api-v3/2SJViY",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Insightly",
+        "base_url": "https://www.insightly.com/api-for-developers",
+        "start_url": "https://www.insightly.com/api-for-developers",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "ActivitySets",
+            "Countries",
+            "Currencies",
+            "Emails",
+            "LeadSources",
+            "LeadStatuses",
+            "OpportunityCategories",
+            "OpportunityStateReasons",
+            "Pipelines",
+            "PipelineStages",
+            "ProjectCategories",
+            "Relationships",
+            "Tags",
+            "TaskCategories",
+            "TeamMembers",
+            "Teams",
+            "Contacts/Search",
+            "Events/Search",
+            "KnowledgeArticleCategory/Search",
+            "KnowledgeArticleFolder/Search",
+            "KnowledgeArticle/Search",
+            "Leads/Search",
+            "Milestones/Search",
+            "Notes/Search",
+            "Opportunities/Search",
+            "OpportunityLineItem/Search",
+            "Organisations/Search",
+            "PricebookEntry/Search",
+            "Pricebook/Search",
+            "Product/Search",
+            "Projects/Search",
+            "Prospect/Search",
+            "QuotationLineItem/Search",
+            "Quotation/Search",
+            "Tasks/Search",
+            "Ticket/Search",
+            "Users/Search"
+        ]
+    },
+    {
+        "name": "Mailjet-mail",
+        "base_url": "https://dev.mailjet.com/email/reference",
+        "start_url": "https://dev.mailjet.com/email/reference",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/contactslist",
+            "/contact",
+            "/statcounters?CounterSource=APIKey&CounterResolution=Lifetime&CounterTiming=Message",
+            "/campaign",
+            "/message",
+            "/listrecipient"
+        ]
+    },
+    {
+        "name": "Mailjet-sms",
+        "base_url": "https://dev.mailjet.com/sms/reference",
+        "start_url": "https://dev.mailjet.com/sms/reference",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "/sms"
+        ]
+    },
+    {
+        "name": "Marketo",
+        "base_url": "https://developers.marketo.com",
+        "start_url": "https://developers.marketo.com/getting-started/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "rest/v1/{self.name}.json",
+            "bulk/v1/{self.stream_name}/export/{stream_slice['id']}/file.json",
+            "bulk/v1/{self.stream_name}/export/create.json",
+            "bulk/v1/{self.stream_name}/export/{self.export_id}/enqueue.json",
+            "bulk/v1/{self.stream_name}/export/{self.export_id}/status.json",
+            "rest/v1/activities/types.json",
+            "rest/asset/v1/{self.name}.json",
+            "rest/asset/v1/segmentation.json"
+        ]
+    },
+    {
+        "name": "My-hours",
+        "base_url": "https://documenter.getpostman.com/view/8879268/TVmV4YYU",
+        "start_url": "https://documenter.getpostman.com/view/8879268/TVmV4YYU",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "Clients",
+            "Projects/getAll",
+            "Tags",
+            "Reports/activity",
+            "Users/getAll"
+        ]
+    },
+    {
+        "name": "Mysql",
+        "base_url": "https://dev.mysql.com/doc",
+        "start_url": "https://dev.mysql.com/doc/index-connectors.html",
+        "airbyte_status": "java-connector",
+        "scraped_page_count": 11
+    },
+    {
+        "name": "Mysql-strict-encrypt",
+        "base_url": "https://dev.mysql.com/doc/c-api/5.7/en",
+        "start_url": "https://dev.mysql.com/doc/c-api/5.7/en/preface.html",
+        "airbyte_status": "java-connector",
+        "scraped_page_count": 11
+    },
+    {
+        "name": "Nytimes",
+        "base_url": "https://developer.nytimes.com",
+        "start_url": "https://developer.nytimes.com/get-started",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "existing_airbyte_endpoints": [
+            "/archive/v1/{{ stream_slice['start_time'].split('-')[0] | int }}/{{ stream_slice['start_time'].split('-')[1] | int }}.json",
+            "/mostpopular/v2/emailed/{{ config['period'] }}.json",
+            "/mostpopular/v2/shared/{{ config['period'] }}{% if 'share_type' in config %}/{{ config['share_type'] }}{% endif %}.json",
+            "/mostpopular/v2/viewed/{{ config['period'] }}.json"
+        ]
+    },
+    {
+        "name": "Orb",
+        "base_url": "https://docs.withorb.com/docs/orb-docs",
+        "start_url": "https://docs.withorb.com/docs/orb-docs/overview",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "customers",
+            "subscriptions",
+            "subscriptions/{subscription_id}/usage",
+            "plans",
+            "invoices",
+            "customers/{customer_id}/credits/ledger"
+        ]
+    },
+    {
+        "name": "Oura",
+        "base_url": "https://api.ouraring.com/v2/docs",
+        "start_url": "https://api.ouraring.com/v2/docs",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "existing_airbyte_endpoints": [
+            "/daily_activity",
+            "/daily_readiness",
+            "/daily_sleep",
+            "/heartrate",
+            "/session",
+            "/sleep",
+            "/tag",
+            "/workout"
+        ]
+    },
+    {
+        "name": "Pardot",
+        "base_url": "https://developer.salesforce.com/docs/marketing/pardot",
+        "start_url": "https://developer.salesforce.com/docs/marketing/pardot/overview",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Paystack",
+        "base_url": "https://paystack.com/docs/api",
+        "start_url": "https://paystack.com/docs/api/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    },
+    {
+        "name": "Pendo",
+        "base_url": "https://engageapi.pendo.io",
+        "start_url": "https://engageapi.pendo.io/#intro",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "existing_airbyte_endpoints": [
+            "/page",
+            "/feature",
+            "/report",
+            "/guide",
+            "/metadata/schema/account",
+            "/metadata/schema/visitor"
+        ]
+    },
+    {
+        "name": "Pexels-api",
+        "base_url": "https://www.pexels.com/api/documentation",
+        "start_url": "https://www.pexels.com/api/documentation#introduction",
+        "airbyte_status": "lowcode-connector",
+        "scraped_page_count": 1,
+        "existing_airbyte_endpoints": [
+            "/v1/search",
+            "/v1/curated",
+            "/videos/search",
+            "/videos/popular",
+            "/v1/collections/featured"
+        ]
+    },
+    {
+        "name": "Primetric",
+        "base_url": "https://developer.primetric.com",
+        "start_url": "https://developer.primetric.com/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": [
+            "assignments",
+            "employees",
+            "hash_tags",
+            "organization/clients",
+            "organization/company_groups",
+            "organization/departments",
+            "organization/identity_providers",
+            "organization/positions",
+            "organization/rag_scopes",
+            "organization/roles",
+            "organization/seniorities",
+            "organization/tags",
+            "organization/teams",
+            "organization/timeoff_types",
+            "people",
+            "projects",
+            "projects_vacancies",
+            "rag_ratings",
+            "skills",
+            "timeoffs",
+            "worklogs"
+        ]
+    },
+    {
+        "name": "Python-http-tutorial",
+        "base_url": "https://api.apilayer.com/exchangerates_data/",
+        "start_url": "https://api.apilayer.com/exchangerates_data/",
+        "airbyte_status": "python-connector",
+        "scraped_page_count": 1,
+        "endpoint_count": 0,
+        "sphere_endpoints": [],
+        "existing_airbyte_endpoints": []
+    }
+]
