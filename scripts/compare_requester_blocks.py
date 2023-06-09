@@ -1,4 +1,5 @@
 import json
+import os
 import requests
 import yaml
 import pinecone
@@ -7,9 +8,9 @@ from langchain.vectorstores import Pinecone
 from langchain.chat_models import ChatOpenAI
 from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
-from logger import getLogger
-from s3 import read_object
-from config import settings
+from services.helpers.logger import getLogger
+from services.helpers.s3 import read_object
+from services.helpers.config import settings
 
 
 # Initialize Pinecone and OpenAI
@@ -83,7 +84,7 @@ def predict_sub_authenticator_block(base_url, domain_base_url, authentication_ty
             "api_token": "{{config.auth_token}}",
         }
     elif authentication_type == 'ApiKeyAuthenticator':
-        query = f"This {base_url} uses pagination to fetch data. What are the main parameters? If main parameters contain 'page' or 'offset' ignore them. Just get the main parameter's name and return only one word parameter"
+        query = f"What is the header name to authorize the API calls with URL {base_url}? Give me the one word header name and don't add extra text"
         response = get_langchain_response(base_url, domain_base_url, query)
         return {
             'type': authentication_type,
@@ -167,14 +168,13 @@ def extract_airbyte_requester_block(connector_name):
         return {}
 
 
-def calculate_line_similarity(block1, block2):
-    block1_lines = set(block1.strip().split('\n'))
-    block2_lines = set(block2.strip().split('\n'))
+def calculate_line_similarity(airbyte_block, sphere_block):
+    airbyte_block_lines = set(airbyte_block.strip().split('\n'))
+    sphere_block_lines = set(sphere_block.strip().split('\n'))
 
-    matching_lines = block1_lines.intersection(block2_lines)
+    matching_lines = airbyte_block_lines.intersection(sphere_block_lines)
 
-    percentage_matching = (len(matching_lines) /
-                           max(len(block1_lines), len(block2_lines))) * 100
+    percentage_matching = (len(matching_lines) / airbyte_block_lines) * 100
 
     return percentage_matching
 
@@ -200,12 +200,13 @@ def main(filename, local=False):
             'sphere_requester_block': sphere_requester_block,
             'similarity': requester_block_similarity,
         }
-
         logger.info("Processed connector: {}".format(connector['name']))
 
-    with open('connectors_retriever_blocks.json', 'w') as f:
+    if not os.path.exists('exports'):
+        os.makedirs('exports')
+    with open('exports/requesters_comparison.json', 'w') as f:
         json.dump(requesters_comparison, f, indent=4)
 
 
 if __name__ == "__main__":
-    main('airbyte_connectors.json', local=True)
+    main('airbyte_connectors.json')
