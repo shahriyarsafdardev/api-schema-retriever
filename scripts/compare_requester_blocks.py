@@ -74,6 +74,7 @@ def get_langchain_response(domain_base_url, query):
 
 
 def get_llm_response(query):
+    query = query[:6000]
     response = llm(query)
     return response.strip('\n')
 
