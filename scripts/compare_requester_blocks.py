@@ -1,8 +1,11 @@
 import json
 import os
+import random
+import time
 import requests
 import yaml
 import pinecone
+import openai
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
@@ -16,6 +19,7 @@ from services.helpers.config import settings
 
 
 # Initialize Pinecone and OpenAI
+openai.api_key = settings.openai_api_key
 pinecone.init(api_key=settings.pinecone_api_key,
               environment=settings.pinecone_env)
 index_name = pinecone.Index(settings.pinecone_index_name)
@@ -43,8 +47,8 @@ def load_json_from_s3(filename):
 def predict_base_url(domain_base_url, endpoints):
     # query = "What is the most likely base url. Some endpoints include a version like /0/, /v0/. Give me the url (including https://) and nothing else"
     # query = "What is the most likely base url of the apis. Base urls exist in most of the apis. Some apis include /v1, /v0, /api in it. Give me the exact base url"
-    query = f"Given the following list of endpoints what is the most likely base url. Some endpoints include a version like '/v0', '/v1'. Give me the url (including https://) and nothing else: {str(endpoints)}"
-    response = get_llm_response(query)
+    query = f"Given the following list of endpoints what is the most likely base url. Base url is the one which exist in the start of the most api endpoints and it contains https and .com in it. Give me only one url (including https://) and nothing else: {str(endpoints)}"
+    response = get_completion_response(query)
     URL_PARTS = ['/v0', '/v1', '/v2', '/v3']
     for part in URL_PARTS:
         if part in response:
@@ -73,10 +77,26 @@ def get_langchain_response(domain_base_url, query):
     return response
 
 
-def get_llm_response(query):
+def get_completion_response(query):
+    max_retries = 5
     query = query[:6000]
-    response = llm(query)
-    return response.strip('\n')
+    for attempt in range(max_retries):
+        try:
+            response = openai.ChatCompletion.create(
+                model='gpt-3.5-turbo',
+                messages=[
+                    {"role": "user", "content": query},
+                ]
+            )
+            return response['choices'][0]['message']['content']
+
+        except openai.error.RateLimitError:
+            wait_time = (2 ** attempt) + random.random()
+            logger.error(
+                f"Request exceeded rate limit. Waiting {wait_time} seconds before retrying.")
+            time.sleep(wait_time)
+
+    raise Exception(f"Maximum number of retries ({max_retries}) exceeded.")
 
 
 def predict_sub_authenticator_block(base_url, domain_base_url, authentication_type):
@@ -93,7 +113,7 @@ def predict_sub_authenticator_block(base_url, domain_base_url, authentication_ty
         }
     elif authentication_type == 'ApiKeyAuthenticator':
         query = f"What is the header name to authorize the API calls with URL {base_url}? Give me the one word header name and don't add extra text"
-        response = get_langchain_response(base_url, domain_base_url, query)
+        response = get_langchain_response(domain_base_url, query)
         return {
             'type': authentication_type,
             "api_token": "{{config.api_token}}",
