@@ -152,10 +152,11 @@ def predict_authenticator_block(base_url, domain_base_url):
 
     return response
 
-def predict_requester_headers(base_url, domain_base_url, endpoints):
+
+def predict_request_headers(base_url, domain_base_url, endpoints):
     ignored_headers = ["Accept-Language", "Authorization", "Content-Type", "User-Agent", "Accept", "Link"]
-    
-    query = f"Given the following list of endpoints, which headers should be present in request for these endpoint apis with base url {base_url}. Give me the required headers names separated on comma(,) basis. If no header is required, return None: {str(endpoints)}"
+
+    query = f"Given the following list of endpoints, which headers should be present in request for these endpoint apis with base url {base_url}. Give me the required headers names separated on comma(,) basis. If no header is required, return None: {str(endpoints[:100])}"
     # query = f"Which Headers are required to be present in the request for the apis of this base url's {base_url} endpoints. Return the name of headers in a list if they are required and if no header is required return 'None'"
     langchain_response = get_langchain_response(domain_base_url, query)
 
@@ -170,6 +171,7 @@ def predict_requester_headers(base_url, domain_base_url, endpoints):
         return filtered_headers_list
     else:
         return None
+
 
 def predict_error_handler_block(base_url, domain_base_url):
     error_handler_options = [
@@ -188,7 +190,7 @@ def predict_requester_block(connector):
     base_url = predict_base_url(connector['base_url'], connector['sphere_endpoints'])
     authenticator = predict_authenticator_block(base_url, connector['base_url'])
     # error_handler = predict_error_handler_block(base_url, connector['base_url'])
-    requester_headers = predict_requester_headers(base_url, connector['base_url'], connector['sphere_endpoints'])
+    request_headers = predict_request_headers(base_url, connector['base_url'], connector['sphere_endpoints'])
 
     requester_block = {
         "type": "HttpRequester",
@@ -197,30 +199,28 @@ def predict_requester_block(connector):
         "authenticator": authenticator,
     }
 
-    if requester_headers is not None and len(requester_headers) > 0:
+    if request_headers is not None and len(request_headers) > 0:
         header_parameters = {}
-        for header in requester_headers:
-            header_parameters[header] = f"{{config.{header.lower().replace('-','_')}}}"
+        for header in request_headers:
+            header_parameters[header] = "{{config." + header.lower().replace('-','_') + "}}"
 
-        requester_block["requester_headers"] = header_parameters   
+        requester_block["request_headers"] = header_parameters   
 
     return requester_block
 
 
 def normalize_airbyte_requester_block(json_obj):
     def traverse(obj):
-        obj_keys = ['api_token', 'username', 'password', 'client_id', 'client_secret', 'refresh_token']
         if isinstance(obj, dict):
             for k, v in obj.items():
-                if k == 'url_base':
+                if isinstance(v, str) and 'config' in v:
+                    obj[k] = "{{config." + k.lower().replace('-', '_') + "}}"
+                elif k == 'url_base':
                     obj[k] = v.rstrip('/')
-                if k in obj_keys:
-                    obj[k] = "{{config." + k + "}}"
                 traverse(v)
         elif isinstance(obj, list):
             for item in obj:
                 traverse(item)
-
     traverse(json_obj)
     return json_obj
 
