@@ -7,6 +7,7 @@ import re
 import io
 from services.scrapers.link_matcher import detect_links
 from termcolor import colored
+from collections import OrderedDict
 
 logger = getLogger()
 
@@ -44,7 +45,10 @@ def create_md_files(filename, local=False):
 
         upload_object(io.BytesIO(combined_file_content.encode('utf-8')), quoted_base_url + '-bulk' + '.md')
 
-        unique_paragraphs = set(combined_file_content.split("\n\n"))
+        # this code splits the text to paragraphs then converts to ordereddict to ensure uniqueness and keep the correct order
+        paragraphs = combined_file_content.split("\n\n")
+        ordered_dict = OrderedDict.fromkeys(paragraphs)
+        unique_paragraphs = list(ordered_dict.keys())
         upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode('utf-8')), quoted_base_url + '-bulk-concise' + '.md')
 
         extracted_links = []
