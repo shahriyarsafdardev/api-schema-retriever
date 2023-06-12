@@ -1,5 +1,5 @@
 {
-    "overall_similarity": 65.22,
+    "overall_similarity": 73.91,
     "requesters": {
         "Sendgrid": {
             "airbyte_requester_block": {
@@ -92,12 +92,12 @@
                 "url_base": "https://api.delighted.com",
                 "http_method": "GET",
                 "authenticator": {
-                    "type": "ApiKeyAuthenticator",
-                    "api_token": "{{config.api_token}}",
-                    "header": " X-Delighted-API-Version"
+                    "type": "BasicHttpAuthenticator",
+                    "username": "{{config.username}}",
+                    "password": "{{config.password}}"
                 }
             },
-            "similarity": 25.0
+            "similarity": 50.0
         }
     }
 }

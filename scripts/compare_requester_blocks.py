@@ -99,7 +99,7 @@ def get_completion_response(query):
     raise Exception(f"Maximum number of retries ({max_retries}) exceeded.")
 
 
-def predict_sub_authenticator_block(base_url, domain_base_url, authentication_type):
+def predict_sub_authentication_type(base_url, domain_base_url, authentication_type):
     if authentication_type == "BasicHttpAuthenticator":
         return {
             "type": "BasicHttpAuthenticator",
@@ -120,9 +120,15 @@ def predict_sub_authenticator_block(base_url, domain_base_url, authentication_ty
             "header": response,
         }
     elif authentication_type == 'OAuth':
-        query = f"Please generate a JSON which contains the following keys with the values for OAuth authentication for the URL {base_url}: 'client_id', 'client_secret', token_refresh_endpoint, refresh_token, access_token_name, expires_in_name. Give me the complete JSON and don't add extra text"
+        query = f"What is the endpoint to refresh the access token for the API endpoints having base url starts with URL: {base_url}? Give me the exact endpoint and don't add extra text"
         response = get_langchain_response(domain_base_url, query)
-        response = {'type': authentication_type}.update(response)
+        response = {
+            'type': authentication_type,
+            'token_refresh_endpoint': response,
+            'client_id': '{{config.client_id}}',
+            'client_secret': '{{config.client_secret}}',
+            'refresh_token': '{{config.refresh_token}}'
+        }
         return response
     else:
         return {'type': authentication_type}
@@ -135,37 +141,49 @@ def predict_authenticator_block(base_url, domain_base_url):
         "ApiKeyAuthenticator",
         "OAuth"
     ]
-    query = f"What is the method of authentication to authorize the API calls with this API? Following are the options: {authenticator_options}. Return the response from given options, just return the one word option. Return 'None' if don't find any"
+    query = f"What is the method of authentication to authorize the API calls with this API? Following are the options: {authenticator_options}. Return the response from given options, just return the one word option"
     langchain_response = get_langchain_response(domain_base_url, query)
     authentication_type = find_best_response(
         langchain_response, authenticator_options)
-    response = predict_sub_authenticator_block(
+    response = predict_sub_authentication_type(
         base_url, domain_base_url, authentication_type)
 
     return response
 
 
+def predict_error_handler_block(base_url, domain_base_url):
+    error_handler_options = [
+        "CompositeErrorHandler",
+        "DefaultErrorHandler"
+    ]
+    query = f"What is the method of handling the errors for the API calls? Following are the options: {error_handler_options}. Return the response from given options, just return the one word option"
+    langchain_response = get_langchain_response(domain_base_url, query)
+    error_handler_type = find_best_response(
+        langchain_response, error_handler_options)
+
+    return error_handler_type
+
+
 def predict_requester_block(connector):
     base_url = predict_base_url(connector['base_url'], connector['sphere_endpoints'])
+    authenticator = predict_authenticator_block(base_url, connector['base_url'])
+    # error_handler = predict_error_handler_block(base_url, connector['base_url'])
     requester_block = {
         "type": "HttpRequester",
         "url_base": base_url.strip(),
         "http_method": "GET",
-        "authenticator": predict_authenticator_block(base_url, connector['base_url']),
+        "authenticator": authenticator,
     }
     return requester_block
 
 
 def normalize_airbyte_requester_block(json_obj):
     def traverse(obj):
+        obj_keys = ['api_token', 'username', 'password', 'client_id', 'client_secret', 'refresh_token']
         if isinstance(obj, dict):
             for k, v in obj.items():
-                if k == 'api_token':
-                    obj[k] = "{{config.api_token}}"
-                elif k == 'username':
-                    obj[k] = "{{config.username}}"
-                elif k == 'password':
-                    obj[k] = "{{config.password}}"
+                if k in obj_keys:
+                    obj[k] = "{{config." + k + "}}"
                 traverse(v)
         elif isinstance(obj, list):
             for item in obj:
