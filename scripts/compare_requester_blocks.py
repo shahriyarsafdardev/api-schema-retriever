@@ -47,12 +47,12 @@ def load_json_from_s3(filename):
 def predict_base_url(domain_base_url, endpoints):
     # query = "What is the most likely base url. Some endpoints include a version like /0/, /v0/. Give me the url (including https://) and nothing else"
     # query = "What is the most likely base url of the apis. Base urls exist in most of the apis. Some apis include /v1, /v0, /api in it. Give me the exact base url"
-    query = f"Given the following list of endpoints what is the most likely base url. Base url is the one which exist in the start of the most api endpoints and it contains https and .com in it. Give me only one url (including https://) and nothing else: {str(endpoints)}"
+    query = f"Give me the part of URL from start (base URL) which is common in start of the most of the given API URLs. Give me only one url (including https://) and nothing else: {str(endpoints)}"
     response = get_completion_response(query)
     URL_PARTS = ['/v0', '/v1', '/v2', '/v3']
     for part in URL_PARTS:
         if part in response:
-            return response.split(part)[0]
+            return response.split(part)[0] + part
     return response.rstrip('/')
 
 
@@ -182,6 +182,8 @@ def normalize_airbyte_requester_block(json_obj):
         obj_keys = ['api_token', 'username', 'password', 'client_id', 'client_secret', 'refresh_token']
         if isinstance(obj, dict):
             for k, v in obj.items():
+                if k == 'url_base':
+                    obj[k] = v.rstrip('/')
                 if k in obj_keys:
                     obj[k] = "{{config." + k + "}}"
                 traverse(v)
