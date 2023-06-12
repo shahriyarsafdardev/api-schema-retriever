@@ -6,6 +6,7 @@ import requests
 import yaml
 import pinecone
 import openai
+import re
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Pinecone
@@ -72,9 +73,10 @@ def get_langchain_response(domain_base_url, query):
             query, k=5, filter={'domain_base_url': domain_base_url})
         response = chain.run(input_documents=docs, question=query)
         # logger.info('Response: {}'.format(response))
+        return response
     except Exception as e:
         logger.error('Error in get_langchain_response: {}'.format(e))
-    return response
+        return None
 
 
 def get_completion_response(query):
@@ -150,6 +152,24 @@ def predict_authenticator_block(base_url, domain_base_url):
 
     return response
 
+def predict_requester_headers(base_url, domain_base_url, endpoints):
+    ignored_headers = ["Accept-Language", "Authorization", "Content-Type", "User-Agent", "Accept", "Link"]
+    
+    query = f"Given the following list of endpoints, which headers should be present in request for these endpoint apis with base url {base_url}. Give me the required headers names separated on comma(,) basis. If no header is required, return None: {str(endpoints)}"
+    # query = f"Which Headers are required to be present in the request for the apis of this base url's {base_url} endpoints. Return the name of headers in a list if they are required and if no header is required return 'None'"
+    langchain_response = get_langchain_response(domain_base_url, query)
+
+    if langchain_response.strip() != "None":
+        headers_list = None
+        if ":" in langchain_response:
+            formatted_header = re.findall(r"([^,:]+):", langchain_response)
+            headers_list = [header.strip() for header in formatted_header]
+        else:
+            headers_list = [header.strip() for header in langchain_response.split(",")]
+        filtered_headers_list = [header for header in headers_list if header not in ignored_headers]
+        return filtered_headers_list
+    else:
+        return None
 
 def predict_error_handler_block(base_url, domain_base_url):
     error_handler_options = [
@@ -168,12 +188,22 @@ def predict_requester_block(connector):
     base_url = predict_base_url(connector['base_url'], connector['sphere_endpoints'])
     authenticator = predict_authenticator_block(base_url, connector['base_url'])
     # error_handler = predict_error_handler_block(base_url, connector['base_url'])
+    requester_headers = predict_requester_headers(base_url, connector['base_url'], connector['sphere_endpoints'])
+
     requester_block = {
         "type": "HttpRequester",
         "url_base": base_url.strip(),
         "http_method": "GET",
         "authenticator": authenticator,
     }
+
+    if requester_headers is not None and len(requester_headers) > 0:
+        header_parameters = {}
+        for header in requester_headers:
+            header_parameters[header] = f"{{config.{header.lower().replace('-','_')}}}"
+
+        requester_block["requester_headers"] = header_parameters   
+
     return requester_block
 
 
