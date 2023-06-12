@@ -1,5 +1,5 @@
 {
-    "overall_similarity": 55.56,
+    "overall_similarity": 100.0,
     "requesters": {
         "Sendgrid": {
             "airbyte_requester_block": {
@@ -8,19 +8,19 @@
                 "http_method": "GET",
                 "authenticator": {
                     "type": "BearerAuthenticator",
-                    "api_token": "{{ config.apikey }}"
+                    "api_token": "{{config.api_token}}"
                 }
             },
             "sphere_requester_block": {
                 "type": "HttpRequester",
-                "url_base": "https://api.sendgrid.com/v3",
+                "url_base": "https://api.sendgrid.com",
                 "http_method": "GET",
                 "authenticator": {
                     "type": "BearerAuthenticator",
-                    "api_token": "{{config.api_key}}"
+                    "api_token": "{{config.api_token}}"
                 }
             },
-            "similarity": 60.0
+            "similarity": 100.0
         },
         "Smartengage": {
             "airbyte_requester_block": {
@@ -28,19 +28,19 @@
                 "http_method": "GET",
                 "authenticator": {
                     "type": "BearerAuthenticator",
-                    "api_token": "{{ config['api_key'] }}"
+                    "api_token": "{{config.api_token}}"
                 }
             },
             "sphere_requester_block": {
                 "type": "HttpRequester",
-                "url_base": "None",
+                "url_base": "https://api.smartengage.com",
                 "http_method": "GET",
                 "authenticator": {
                     "type": "BearerAuthenticator",
-                    "api_token": "{{config.api_key}}"
+                    "api_token": "{{config.api_token}}"
                 }
             },
-            "similarity": 50.0
+            "similarity": 100.0
         }
     }
 }
