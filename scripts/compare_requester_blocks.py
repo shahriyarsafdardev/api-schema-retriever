@@ -46,10 +46,10 @@ def load_json_from_s3(filename):
     return json.loads(file_content)
 
 
-def predict_base_url(domain_base_url, endpoints):
+def predict_base_url(domain_base_url, endpoints, connector_name):
     # query = "What is the most likely base url. Some endpoints include a version like /0/, /v0/. Give me the url (including https://) and nothing else"
     # query = "What is the most likely base url of the apis. Base urls exist in most of the apis. Some apis include /v1, /v0, /api in it. Give me the exact base url"
-    query = f"Give me the part of URL from start (base URL) which is common in start of the most of the given API URLs. Give me only one url (including https://) and nothing else: {str(endpoints)}"
+    query = f"Give me the part of URL from start (base URL) which is common in start of  the most of the given API URLs.If common URL not found then look for this string {connector_name.lower()} in the API URLs also. Give me only one url (including https://) and nothing else: {str(endpoints)}"
     response = get_completion_response(query)
     parsed_url = urlparse(response)
     return f"{parsed_url.scheme}://{parsed_url.netloc}"
@@ -179,7 +179,7 @@ def predict_request_headers(base_url, domain_base_url, endpoints):
 
 
 def predict_request_parameters(base_url, domain_base_url, endpoints):
-    ignored_query_params = ["limit","from", "cursor", "email", "name", "api_key", "page", "offset", "None"]
+    ignored_query_params = ["limit","from", "cursor", "email", "name", "api_key", "page", "offset", "None", "per_page"]
     
     query = f"There are two types of request parameters. One is 'headers'(these parameters are hidden in request headers) and other is 'query'(these parameters are present in the url with '?' and '=' key values) parameters. Ignore the 'header' parameters. What are major query parameters that should be present in request parameter when APIs with this base url: '{base_url}' used to fetch the data. Only give the query parameters names and separate them on the basis of comma(,)"
     # query = f"What are major query parameters that should be present in request parameter when APIs with this base url: '{base_url}' used to fetch the data consider that we are skipping headers parameters and looking for only query parameters"
@@ -241,7 +241,7 @@ def predict_error_handler_block(base_url, domain_base_url):
 
 
 def predict_requester_block(connector):
-    base_url = predict_base_url(connector['base_url'], connector['sphere_endpoints'])
+    base_url = predict_base_url(connector['base_url'], connector['sphere_endpoints'], connector['name'])
     authenticator = predict_authenticator_block(base_url, connector['base_url'])
     request_headers = predict_request_headers(base_url, connector['base_url'], connector['sphere_endpoints'])
     request_parameters = predict_request_parameters(base_url, connector['base_url'], connector['sphere_endpoints'])
@@ -256,14 +256,14 @@ def predict_requester_block(connector):
     if request_headers is not None and len(request_headers) > 0:
         header_parameters = {}
         for header in request_headers:
-            header_parameters[header] = "{{config." + header.lower().replace('-','_') + "}}"
+            header_parameters[header.lower()] = "{{config." + header.lower().replace('-','_') + "}}"
 
         requester_block["request_headers"] = header_parameters
 
     if request_parameters is not None and len(request_parameters) > 0:
         request_parameters_block = {}
         for parameter in request_parameters:
-            request_parameters_block[parameter] = "{{config." + parameter.lower().replace('-','_') + "}}"
+            request_parameters_block[parameter.lower()] = "{{config." + parameter.lower().replace('-','_') + "}}"
 
         requester_block["request_parameters"] = request_parameters_block
 
