@@ -1,0 +1,337 @@
+{
+    "overall_endpoint_success_percentage": 74.18,
+    "connectors": [
+        {
+            "name": "Railz",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Recruitee",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Rocket-chat",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Sendgrid",
+            "endpoint_success_percentage": 93.75
+        },
+        {
+            "name": "Sendinblue",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Senseforce",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Sentry",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Smaily",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Smartengage",
+            "endpoint_success_percentage": 25.0
+        },
+        {
+            "name": "Square",
+            "endpoint_success_percentage": 92.86
+        },
+        {
+            "name": "Statuspage",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Survey-sparrow",
+            "endpoint_success_percentage": 12.5
+        },
+        {
+            "name": "The-guardian-api",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Tmdb",
+            "endpoint_success_percentage": 96.88
+        },
+        {
+            "name": "Toggl",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Tvmaze-schedule",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Twilio-taskrouter",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Twitter",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Tyntec-sms",
+            "endpoint_success_percentage": 80.0
+        },
+        {
+            "name": "Vantage",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Vitally",
+            "endpoint_success_percentage": 87.5
+        },
+        {
+            "name": "Waiteraid",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Woocommerce",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Workable",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Workramp",
+            "endpoint_success_percentage": 83.33
+        },
+        {
+            "name": "Yotpo",
+            "endpoint_success_percentage": 33.33
+        },
+        {
+            "name": "Zapier-supported-storage",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Zenloop",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Activecampaign",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Aha",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Aircall",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Alpha-vantage",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Amplitude",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Ashby",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Braze",
+            "endpoint_success_percentage": 7.69
+        },
+        {
+            "name": "Breezometer",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Callrail",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Chargebee",
+            "endpoint_success_percentage": 90.91
+        },
+        {
+            "name": "Chartmogul",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Clickup-api",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Close-com",
+            "endpoint_success_percentage": 77.78
+        },
+        {
+            "name": "Coin-api",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Coingecko-coins",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Convertkit",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Courier",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Datascope",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Delighted",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Dremio",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Emailoctopus",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Facebook-pages",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Fullstory",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Getlago",
+            "endpoint_success_percentage": 85.71
+        },
+        {
+            "name": "Gnews",
+            "endpoint_success_percentage": 50.0
+        },
+        {
+            "name": "Gocardless",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Google-pagespeed-insights",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Google-webfonts",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Greenhouse",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Gutendex",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Instatus",
+            "endpoint_success_percentage": 83.33
+        },
+        {
+            "name": "Intercom",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Intruder",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Ip2whois",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "K6-cloud",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Launchdarkly",
+            "endpoint_success_percentage": 50.0
+        },
+        {
+            "name": "Lokalise",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Mailerlite",
+            "endpoint_success_percentage": 75.0
+        },
+        {
+            "name": "Mailersend",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Merge",
+            "endpoint_success_percentage": 7.14
+        },
+        {
+            "name": "Metabase",
+            "endpoint_success_percentage": 80.0
+        },
+        {
+            "name": "Monday",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "N8n",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "News-api",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Newsdata",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Omnisend",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Partnerstack",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Plausible",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Pocket",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Polygon-stock-api",
+            "endpoint_success_percentage": 0.0
+        },
+        {
+            "name": "Posthog",
+            "endpoint_success_percentage": 77.78
+        },
+        {
+            "name": "Postmarkapp",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Prestashop",
+            "endpoint_success_percentage": 19.64
+        },
+        {
+            "name": "Punk-api",
+            "endpoint_success_percentage": 100.0
+        },
+        {
+            "name": "Pypi",
+            "endpoint_success_percentage": 100.0
+        }
+    ]
+}

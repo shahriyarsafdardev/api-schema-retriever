@@ -21,6 +21,10 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium import webdriver
 from bs4 import BeautifulSoup
 
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
 
 def get_html_with_selenium(page_url, verbose=False):
     """
@@ -29,25 +33,37 @@ def get_html_with_selenium(page_url, verbose=False):
     :param page_url: String containing the URL from which the HTML content is to be downloaded.
     :return: String containing the HTML content of the webpage. 
     """
-    
+
     options = webdriver.FirefoxOptions()
+
     options.add_argument("--headless")
+    options.binary_location = '/Applications/Firefox.app/Contents/MacOS/firefox'
     
     service = Service(GeckoDriverManager().install())
+    
+    # this is where it started to scrap the page
     driver = webdriver.Firefox(service=service, options=options)
+    
+   
     driver.set_page_load_timeout(30)
 
-    try:
+    try:        
         driver.get(page_url)
-        time.sleep(2)
+        # time.sleep(2)
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        
         logger.info("Page HTML: %s", driver.page_source)
     
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         if verbose:
             logger.info("Page HTML: %s", soup.prettify())
+        
+        
     except Exception as e:
+        
         logger.error("Error parsing HTML: %s", str(e), exc_info=True)
         soup = None
+    
     
     driver.quit()
     

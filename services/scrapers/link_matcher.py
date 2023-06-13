@@ -8,7 +8,8 @@ def detect_links(text):
             text = text.replace(match.group(), match.group().replace(" ", "_"))
         
     # Step 2
-    pattern_2 = r"(?<=[\s\"'(\[`])(?:http|\/)[^\s\"'\)\]`]+"
+    # pattern_2 = r"(?<=[\s\"'(\[`])(?:http|\/)[^\s\"'\)\]`]+"
+    pattern_2 = r"(?:(?<=\s)|(?<=^))(?:http|\/)[^\s\"'\)\]`]+"
     links = re.findall(pattern_2, text)
 
     # Step 3
