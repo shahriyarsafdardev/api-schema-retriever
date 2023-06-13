@@ -140,7 +140,8 @@ def predict_authenticator_block(base_url, domain_base_url):
         "ApiKeyAuthenticator",
         "OAuth"
     ]
-    query = f"What is the method of authentication to authorize the API calls with this API? Following are the options: {authenticator_options}. Return the response from given options, just return the one word option"
+    # query = f"What is the method of authentication to authorize the API calls with this API? Following are the options: {authenticator_options}. Return the response from given options, just return the one word option"
+    query = "What is the method of authentication to authorize the API calls with this API? Following are the options: {authenticator_options}. BasicHttpAuthenticator if basic auth keywords exist. BearerHttpAuthenticator if Bearer or Authorization keywords exist. ApiKeyAuthenticator if API or Authorization keywords exist. Return the response from given options, just return the one word option which is the most relevant"
     langchain_response = get_langchain_response(domain_base_url, query)
     authentication_type = find_best_response(
         langchain_response, authenticator_options)
