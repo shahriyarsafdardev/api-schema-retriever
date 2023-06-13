@@ -238,7 +238,7 @@ def predict_requester_block(connector):
     authenticator = predict_authenticator_block(base_url, connector['base_url'])
     request_headers = predict_request_headers(base_url, connector['base_url'], connector['sphere_endpoints'])
     request_parameters = predict_request_parameters(base_url, connector['base_url'], connector['sphere_endpoints'])
-    error_handler = predict_error_handler_block(base_url, connector['base_url'])
+    # error_handler = predict_error_handler_block(base_url, connector['base_url'])
     requester_block = {
         "type": "HttpRequester",
         "url_base": base_url.strip(),
@@ -260,8 +260,8 @@ def predict_requester_block(connector):
 
         requester_block["request_parameters"] = request_parameters_block
 
-    if error_handler is not None:
-        requester_block["error_handler"] = error_handler
+    # if error_handler is not None:
+    #     requester_block["error_handler"] = error_handler
 
     return requester_block
 
