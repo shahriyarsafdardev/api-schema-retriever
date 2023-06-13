@@ -8,6 +8,25 @@ link_pattern = r'\s(https?|/[^/\s]+)'
 logger = getLogger()
 
 
+def create_context(texts, verbose=False):
+    context = ""
+    for text in texts:
+        remaining_space = 6000 - len(context)
+        if remaining_space == 0:
+            break
+        if len(text) > remaining_space:
+            context += text[:remaining_space]
+        else:
+            context += text
+
+    if verbose:
+        logger.info('Creating context')
+        logger.info('Number of texts:', len(texts))
+        logger.info(context)
+
+    return context
+
+
 def link_search_text(text):
     pattern = re.compile(link_pattern)
 
@@ -21,15 +40,19 @@ def link_search_text(text):
 
 
 def text_slice_to_vector(text, base_url):
+    context = create_context(text)
+    embedding = create_embedding(context)
     metadata = {
-        "text": text,
+        "text": context,
         "domain_base_url": base_url,
-        "referenced_urls": detect_links(text)
+        "referenced_urls": detect_links(context)
     }
-
+    logger.info('Generating embedding for {} having length {}'.format(base_url, len(context)))
+    if len(text) > 1000:
+        logger.info('Processing bigger chunk')
     return (
         str(uuid.uuid4()),
-        create_embedding(text),
+        embedding,
         metadata
     )
 
@@ -55,7 +78,7 @@ def split_into_chunks(text, max_length=500):
             header_track = {level: header for level,
                             header in header_track.items() if level < header_level}
             header_track[header_level] = header_content
-            print(f'Set Title at Level {header_level}: {header_content}')
+            # print(f'Set Title at Level {header_level}: {header_content}')
 
         else:
             headers = [header for level, header in sorted(
@@ -63,8 +86,10 @@ def split_into_chunks(text, max_length=500):
             header_string = '\n'.join(headers)
 
             if header_string:
-                new_paragraphs.append(header_string + "\n" + paragraph)
-                print(f'Set Para: {header_string} \n {paragraph}')
+                lines = paragraph.split("\n")
+                for line in lines:
+                    new_paragraphs.append(header_string + "\n" + line)
+                    # print(f'Set Para: {header_string} \n {line}')
 
     for idx, paragraph in enumerate(new_paragraphs):
         if len(current_chunk) + len(paragraph) + 1 <= max_length:

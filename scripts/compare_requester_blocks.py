@@ -2,6 +2,7 @@ import json
 import os
 import random
 import time
+from urllib.parse import urlparse
 import requests
 import yaml
 import pinecone
@@ -50,11 +51,8 @@ def predict_base_url(domain_base_url, endpoints):
     # query = "What is the most likely base url of the apis. Base urls exist in most of the apis. Some apis include /v1, /v0, /api in it. Give me the exact base url"
     query = f"Give me the part of URL from start (base URL) which is common in start of the most of the given API URLs. Give me only one url (including https://) and nothing else: {str(endpoints)}"
     response = get_completion_response(query)
-    URL_PARTS = ['/v0', '/v1', '/v2', '/v3']
-    for part in URL_PARTS:
-        if part in response:
-            return response.split(part)[0] + part
-    return response.rstrip('/')
+    parsed_url = urlparse(response)
+    return f"{parsed_url.scheme}://{parsed_url.netloc}"
 
 
 def find_best_response(response, options):
@@ -73,7 +71,7 @@ def get_langchain_response(domain_base_url, query):
             query, k=5, filter={'domain_base_url': domain_base_url})
         response = chain.run(input_documents=docs, question=query)
         # logger.info('Response: {}'.format(response))
-        return response
+        return response.strip()
     except Exception as e:
         logger.error('Error in get_langchain_response: {}'.format(e))
         return None
@@ -156,8 +154,8 @@ def predict_authenticator_block(base_url, domain_base_url):
 def predict_request_headers(base_url, domain_base_url, endpoints):
     ignored_headers = ["Accept-Language", "Authorization", "Content-Type", "User-Agent", "Accept", "Link"]
 
-    query = f"Given the following list of endpoints, which headers should be present in request for these endpoint apis with base url {base_url}. Give me the required headers names separated on comma(,) basis. If no header is required, return None: {str(endpoints[:100])}"
     # query = f"Which Headers are required to be present in the request for the apis of this base url's {base_url} endpoints. Return the name of headers in a list if they are required and if no header is required return 'None'"
+    query = f"Given the following list of endpoints, which headers should be present in request for these endpoint apis with base url {base_url}. Give me the required headers names separated on comma(,) basis. If no header is required, return None: {str(endpoints[:100])}"
     langchain_response = get_langchain_response(domain_base_url, query)
 
     if langchain_response.strip() != "None":
@@ -169,6 +167,22 @@ def predict_request_headers(base_url, domain_base_url, endpoints):
             headers_list = [header.strip() for header in langchain_response.split(",")]
         filtered_headers_list = [header for header in headers_list if header not in ignored_headers]
         return filtered_headers_list
+    else:
+        return None
+
+
+def predict_request_parameters(base_url, domain_base_url, endpoints):
+    query = f"Given the following list of endpoints, which request parameters should be present in request for these endpoint apis with base url {base_url}. Give me the required request parameters names separated on comma(,) basis. If no request parameter is required, return None: {str(endpoints[:100])}"
+    langchain_response = get_langchain_response(domain_base_url, query)
+
+    if langchain_response.strip() != "None":
+        parameters_list = None
+        if ":" in langchain_response:
+            formatted_parameters = re.findall(r"([^,:]+):", langchain_response)
+            parameters_list = [parameter.strip() for parameter in formatted_parameters]
+        else:
+            parameters_list = [parameter.strip() for parameter in langchain_response.split(",")]
+        return parameters_list
     else:
         return None
 
@@ -191,6 +205,7 @@ def predict_requester_block(connector):
     authenticator = predict_authenticator_block(base_url, connector['base_url'])
     # error_handler = predict_error_handler_block(base_url, connector['base_url'])
     request_headers = predict_request_headers(base_url, connector['base_url'], connector['sphere_endpoints'])
+    request_parameters = predict_request_parameters(base_url, connector['base_url'], connector['sphere_endpoints'])
 
     requester_block = {
         "type": "HttpRequester",
@@ -204,7 +219,14 @@ def predict_requester_block(connector):
         for header in request_headers:
             header_parameters[header] = "{{config." + header.lower().replace('-','_') + "}}"
 
-        requester_block["request_headers"] = header_parameters   
+        requester_block["request_headers"] = header_parameters
+
+    if request_parameters is not None and len(request_parameters) > 0:
+        request_parameters_block = {}
+        for parameter in request_parameters:
+            request_parameters_block[parameter] = "{{config." + parameter.lower().replace('-','_') + "}}"
+
+        requester_block["request_parameters"] = request_parameters_block
 
     return requester_block
 
@@ -212,12 +234,17 @@ def predict_requester_block(connector):
 def normalize_airbyte_requester_block(json_obj):
     def traverse(obj):
         if isinstance(obj, dict):
-            for k, v in obj.items():
-                if isinstance(v, str) and 'config' in v:
+            for k in list(obj.keys()):
+                v = obj[k]
+                if k == 'error_handler':
+                    del obj[k]
+                elif isinstance(v, str) and 'config' in v:
                     obj[k] = "{{config." + k.lower().replace('-', '_') + "}}"
                 elif k == 'url_base':
-                    obj[k] = v.rstrip('/')
-                traverse(v)
+                    parsed_url = urlparse(v)
+                    obj[k] = f"{parsed_url.scheme}://{parsed_url.netloc}"
+                else:
+                    traverse(v)
         elif isinstance(obj, list):
             for item in obj:
                 traverse(item)
