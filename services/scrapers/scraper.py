@@ -12,6 +12,7 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import time
+from requests.exceptions import HTTPError, InvalidSchema, ConnectTimeout
 
 logger = getLogger()
 
@@ -29,22 +30,18 @@ def get_html_with_selenium(page_url, verbose=False):
     :return: String containing the HTML content of the webpage. 
     """
     
-    # Creating options
     options = webdriver.FirefoxOptions()
     options.add_argument("--headless")
     
-    # Create webdriver object
     service = Service(GeckoDriverManager().install())
     driver = webdriver.Firefox(service=service, options=options)
     driver.set_page_load_timeout(30)
 
-    # Navigate to the page
     try:
         driver.get(page_url)
         time.sleep(2)
         logger.info("Page HTML: %s", driver.page_source)
     
-        # Parse the page source
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         if verbose:
             logger.info("Page HTML: %s", soup.prettify())
@@ -52,50 +49,51 @@ def get_html_with_selenium(page_url, verbose=False):
         logger.error("Error parsing HTML: %s", str(e), exc_info=True)
         soup = None
     
-    # Close the webdriver
     driver.quit()
     
     return str(soup)
 
-
 def download_html(page_url, verbose=False):
-    """
-    This function downloads the HTML content from a given URL.
-
-    :param page_url: String containing the URL from which the HTML content is to be downloaded.
-    :return: String containing the HTML content of the webpage. In case of an error, it returns None.
-    """
     try:
-        response = requests.get(page_url)
+        response = requests.get(page_url, timeout=60)
         response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
 
-        # Parse the response text using BeautifulSoup with html.parser
-        soup = BeautifulSoup(response.text, 'html.parser')
-        a_tags_list = soup.find_all('a', href=True)
-
-        # If no 'a' tags are found, switch to Selenium
-        if len(a_tags_list) == 0 and verbose:
-            logger.info("Switching to Selenium for: %s", page_url)
-            soup = get_html_with_selenium(page_url)
+        # Use Selenium if no links are found in the page.
+        if not soup.find_all('a'):
+            if verbose:
+                logger.info("No links found on the page: %s. Switching to Selenium.", page_url)
+            soup = get_html_with_selenium(page_url, verbose=verbose)
 
         if verbose:
             logger.info("Downloaded HTML from: %s", page_url)
         
         return str(soup)
-    except (requests.exceptions.HTTPError, requests.exceptions.InvalidSchema) as err:
-        if isinstance(err, requests.exceptions.HTTPError) and err.response.status_code not in (403, 429):
+
+    except HTTPError as err:
+        if err.response.status_code in (403, 429):  # Forbidden or Too Many Requests
             if verbose:
-                logger.error("Error downloading: %s", page_url, exc_info=True)
-            return None
-        else:
-            if verbose:
-                logger.info("Switching to Selenium due to error for: %s", page_url)
+                logger.info("Switching to Selenium due to HTTP error for: %s", page_url)
             soup = get_html_with_selenium(page_url, verbose=verbose)
 
             if verbose:
                 logger.info("Downloaded HTML from: %s", page_url)
             
             return str(soup)
+
+        if verbose:
+            logger.info("HTTP error occurred for: %s. Skipping.", page_url)
+        return None
+
+    except InvalidSchema:
+        if verbose:
+            logger.info("Invalid URL schema: %s. Skipping.", page_url)
+        return None
+
+    except Exception as e:
+        if verbose:
+            logger.info("An error occurred when trying to download HTML from: %s. Error: %s. Skipping.", page_url, e)
+        return None
 
 
 def extract_linked_urls(html, page_url, verbose=False):
