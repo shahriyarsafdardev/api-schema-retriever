@@ -8,8 +8,54 @@ from tqdm import tqdm
 from services.helpers.logger import getLogger
 from scrapingbee import ScrapingBeeClient
 import concurrent.futures
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
+import time
 
 logger = getLogger()
+
+from selenium.webdriver.firefox.service import Service
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium import webdriver
+from bs4 import BeautifulSoup
+
+
+def get_html_with_selenium(page_url, verbose=False):
+    """
+    This function uses Selenium with Firefox to get the HTML content of the given page URL.
+
+    :param page_url: String containing the URL from which the HTML content is to be downloaded.
+    :return: String containing the HTML content of the webpage. 
+    """
+    
+    # Creating options
+    options = webdriver.FirefoxOptions()
+    options.add_argument("--headless")
+    
+    # Create webdriver object
+    service = Service(GeckoDriverManager().install())
+    driver = webdriver.Firefox(service=service, options=options)
+    driver.set_page_load_timeout(30)
+
+    # Navigate to the page
+    try:
+        driver.get(page_url)
+        time.sleep(2)
+        logger.info("Page HTML: %s", driver.page_source)
+    
+        # Parse the page source
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        if verbose:
+            logger.info("Page HTML: %s", soup.prettify())
+    except Exception as e:
+        logger.error("Error parsing HTML: %s", str(e), exc_info=True)
+        soup = None
+    
+    # Close the webdriver
+    driver.quit()
+    
+    return str(soup)
 
 
 def download_html(page_url, verbose=False):
@@ -22,25 +68,35 @@ def download_html(page_url, verbose=False):
     try:
         response = requests.get(page_url)
         response.raise_for_status()
+
+        # Parse the response text using BeautifulSoup with html.parser
+        soup = BeautifulSoup(response.text, 'html.parser')
+        a_tags_list = soup.find_all('a', href=True)
+
+        # If no 'a' tags are found, switch to Selenium
+        if len(a_tags_list) == 0 and verbose:
+            logger.info("Switching to Selenium for: %s", page_url)
+            soup = get_html_with_selenium(page_url)
+
         if verbose:
             logger.info("Downloaded HTML from: %s", page_url)
         
-        # Parse the response text using BeautifulSoup with html.parser
-        a_tags_list = []
-        soup = BeautifulSoup(response.text, 'html.parser')
-        a_tags_list = soup.find_all('a', href=True)
-        
-        # # Scrape using scraping_bee client if no 'a' tags are found
-        # if len(a_tags_list) == 0:
-        #     response = scraping_bee_scrapper(page_url)
-        #     if verbose:
-        #         logger.info("Downloaded HTML from: %s using scraping bee", page_url)
-                
-        return response.text
-    except Exception as e:
-        if verbose:
-            logger.error("Error downloading: %s", page_url, exc_info=True)
-        return None
+        return str(soup)
+    except (requests.exceptions.HTTPError, requests.exceptions.InvalidSchema) as err:
+        if isinstance(err, requests.exceptions.HTTPError) and err.response.status_code not in (403, 429):
+            if verbose:
+                logger.error("Error downloading: %s", page_url, exc_info=True)
+            return None
+        else:
+            if verbose:
+                logger.info("Switching to Selenium due to error for: %s", page_url)
+            soup = get_html_with_selenium(page_url, verbose=verbose)
+
+            if verbose:
+                logger.info("Downloaded HTML from: %s", page_url)
+            
+            return str(soup)
+
 
 def extract_linked_urls(html, page_url, verbose=False):
     """

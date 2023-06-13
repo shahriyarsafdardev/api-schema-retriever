@@ -11,3 +11,4 @@ env.json
 .config-staging
 .config-production
 .tool-versions
+geckodriver.log
