@@ -150,8 +150,13 @@ def predict_authenticator_block(base_url, domain_base_url):
     return response
 
 
+def remove_special_characters(input_string):
+    special_characters = "!@#$%^&*()[]{};:,./<>?\|`~-=_+'\" "
+    return input_string.strip(special_characters)
+
+
 def predict_request_headers(base_url, domain_base_url, endpoints):
-    ignored_headers = ["Accept-Language", "Authorization", "Content-Type", "User-Agent", "Accept", "Link"]
+    ignored_headers = ["Accept-Language", "Authorization", "Content-Type", "User-Agent", "Accept", "Link", "None"]
 
     # query = f"Which Headers are required to be present in the request for the apis of this base url's {base_url} endpoints. Return the name of headers in a list if they are required and if no header is required return 'None'"
     query = f"Given the following list of endpoints, which headers should be present in request for these endpoint apis with base url {base_url}. Give me the required headers names separated on comma(,) basis. If no header is required, return None: {str(endpoints[:100])}"
@@ -162,15 +167,10 @@ def predict_request_headers(base_url, domain_base_url, endpoints):
         filtered_headers_list = []
         if ":" in langchain_response:
             formatted_header = re.findall(r"([^,:]+):", langchain_response)
-            headers_list = [header.strip() for header in formatted_header]
+            headers_list = [header.strip() for header in formatted_header if len(header.strip().split(" ")) == 1]
         else:
-            headers_list = [header.strip() for header in langchain_response.split(",")]
-
-        for header in headers_list:
-            if len(header.split(' ')) > 1:
-                continue
-            elif header not in ignored_headers:
-                filtered_headers_list.append(header)
+            headers_list = [header.strip() for header in langchain_response.split(",") if len(header.strip().split(" ")) == 1]
+        filtered_headers_list = [remove_special_characters(header) for header in headers_list if header not in ignored_headers]
 
         return filtered_headers_list
     else:
@@ -178,17 +178,23 @@ def predict_request_headers(base_url, domain_base_url, endpoints):
 
 
 def predict_request_parameters(base_url, domain_base_url, endpoints):
-    query = f"Given the following list of endpoints, which request parameters should be present in request for these endpoint apis with base url {base_url}. Give me the required request parameters names separated on comma(,) basis. If no request parameter is required, return None: {str(endpoints[:100])}"
+    ignored_query_params = ["limit","from", "cursor", "email", "name", "api_key", "page", "offset", "None"]
+    
+    query = f"There are two types of request parameters. One is 'headers'(these parameters are hidden in request headers) and other is 'query'(these parameters are present in the url with '?' and '=' key values) parameters. Ignore the 'header' parameters. What are major query parameters that should be present in request parameter when APIs with this base url: '{base_url}' used to fetch the data. Only give the query parameters names and separate them on the basis of comma(,)"
+    # query = f"What are major query parameters that should be present in request parameter when APIs with this base url: '{base_url}' used to fetch the data consider that we are skipping headers parameters and looking for only query parameters"
     langchain_response = get_langchain_response(domain_base_url, query)
 
     if langchain_response != "None" and langchain_response != None:
         parameters_list = None
         if ":" in langchain_response:
             formatted_parameters = re.findall(r"([^,:]+):", langchain_response)
-            parameters_list = [parameter.strip() for parameter in formatted_parameters]
+            parameters_list = [parameter.strip() for parameter in formatted_parameters if len(parameter.strip().split(" ")) == 1]
         else:
-            parameters_list = [parameter.strip() for parameter in langchain_response.split(",")]
-        return parameters_list
+            parameters_list = [parameter.strip() for parameter in langchain_response.split(",") if len(parameter.strip().split(" ")) == 1]
+        params_without_ids = [parameter for parameter in parameters_list if not parameter.endswith('Id') and not parameter.endswith('id')]
+        filtered_parameters_list = [remove_special_characters(parameter) for parameter in params_without_ids if parameter not in ignored_query_params]
+
+        return filtered_parameters_list
     else:
         return None
 
