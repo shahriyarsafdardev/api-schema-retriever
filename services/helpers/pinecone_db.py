@@ -13,11 +13,11 @@ upsert_batch_size = 90
 
 
 def store_chunks(chunks):
-    try:
-        for i in range(0, len(chunks), upsert_batch_size):
+    for i in range(0, len(chunks), upsert_batch_size):
+        try:
             index.upsert(vectors=chunks[i:i + upsert_batch_size])
             logger.info(
                 f"Stored {min(upsert_batch_size, len(chunks[i:i + upsert_batch_size]))} vectors to pinecone")
-    except Exception as e:
-        logger.error(
-            f"Something went wrong while storing vectors to pinecone: {e}")
+        except Exception as e:
+            logger.error(
+                f"Something went wrong while storing vectors to pinecone: {e}")

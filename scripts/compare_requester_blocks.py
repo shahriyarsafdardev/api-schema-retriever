@@ -57,8 +57,7 @@ def predict_base_url(domain_base_url, endpoints):
 
 def find_best_response(response, options):
     """Return the first matching response from the options, else 'None'."""
-    response = response.lower()
-    return next((option for option in options if option.lower() in response), 'None')
+    return next((option for option in options if option.lower() in response.lower()), 'None')
 
 
 def get_langchain_response(domain_base_url, query):
@@ -112,7 +111,7 @@ def predict_sub_authentication_type(base_url, domain_base_url, authentication_ty
             "api_token": "{{config.api_token}}",
         }
     elif authentication_type == 'ApiKeyAuthenticator':
-        query = f"What is the header name to authorize the API calls with URL {base_url}? Give me the one word header name and don't add extra text"
+        query = f"Give me the header name which should be present to authorize the API call with base URL {base_url}? Header names are usually (Authorization, ApiKey, Username etc.) Give me the one word header name and don't add extra text"
         response = get_langchain_response(domain_base_url, query)
         return {
             'type': authentication_type,
@@ -158,14 +157,21 @@ def predict_request_headers(base_url, domain_base_url, endpoints):
     query = f"Given the following list of endpoints, which headers should be present in request for these endpoint apis with base url {base_url}. Give me the required headers names separated on comma(,) basis. If no header is required, return None: {str(endpoints[:100])}"
     langchain_response = get_langchain_response(domain_base_url, query)
 
-    if langchain_response.strip() != "None":
-        headers_list = None
+    if langchain_response != "None" and langchain_response != None:
+        headers_list = []
+        filtered_headers_list = []
         if ":" in langchain_response:
             formatted_header = re.findall(r"([^,:]+):", langchain_response)
             headers_list = [header.strip() for header in formatted_header]
         else:
             headers_list = [header.strip() for header in langchain_response.split(",")]
-        filtered_headers_list = [header for header in headers_list if header not in ignored_headers]
+
+        for header in headers_list:
+            if len(header.split(' ')) > 1:
+                continue
+            elif header not in ignored_headers:
+                filtered_headers_list.append(header)
+
         return filtered_headers_list
     else:
         return None
@@ -175,7 +181,7 @@ def predict_request_parameters(base_url, domain_base_url, endpoints):
     query = f"Given the following list of endpoints, which request parameters should be present in request for these endpoint apis with base url {base_url}. Give me the required request parameters names separated on comma(,) basis. If no request parameter is required, return None: {str(endpoints[:100])}"
     langchain_response = get_langchain_response(domain_base_url, query)
 
-    if langchain_response.strip() != "None":
+    if langchain_response != "None" and langchain_response != None:
         parameters_list = None
         if ":" in langchain_response:
             formatted_parameters = re.findall(r"([^,:]+):", langchain_response)
@@ -358,7 +364,7 @@ def main(filename, local=False):
     total_matches = 0
     total_airbyte_block_pair_count = 0
 
-    for connector in connectors:
+    for idx, connector in enumerate(connectors):
         if connector.get('airbyte_status') != 'lowcode-connector':
             continue
 
@@ -376,7 +382,7 @@ def main(filename, local=False):
 
         total_matches += matches_count
         total_airbyte_block_pair_count += airbyte_block_pair_count
-        logger.info("Processed connector: {}".format(connector['name']))
+        logger.info("Processed connector {}: {}".format(idx+1, connector['name']))
 
     overall_similarity = (total_matches/total_airbyte_block_pair_count) * \
         100 if total_airbyte_block_pair_count != 0 else total_matches

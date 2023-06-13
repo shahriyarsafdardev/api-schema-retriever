@@ -8,21 +8,16 @@ link_pattern = r'\s(https?|/[^/\s]+)'
 logger = getLogger()
 
 
-def create_context(texts, verbose=False):
+def create_context(texts):
     context = ""
     for text in texts:
-        remaining_space = 6000 - len(context)
+        remaining_space = 1000 - len(context)
         if remaining_space == 0:
             break
         if len(text) > remaining_space:
             context += text[:remaining_space]
         else:
             context += text
-
-    if verbose:
-        logger.info('Creating context')
-        logger.info('Number of texts:', len(texts))
-        logger.info(context)
 
     return context
 
