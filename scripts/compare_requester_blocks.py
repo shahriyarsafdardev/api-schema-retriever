@@ -187,26 +187,52 @@ def predict_request_parameters(base_url, domain_base_url, endpoints):
         return None
 
 
-def predict_error_handler_block(base_url, domain_base_url):
-    error_handler_options = [
-        "CompositeErrorHandler",
-        "DefaultErrorHandler"
-    ]
-    query = f"What is the method of handling the errors for the API calls? Following are the options: {error_handler_options}. Return the response from given options, just return the one word option"
-    langchain_response = get_langchain_response(domain_base_url, query)
-    error_handler_type = find_best_response(
-        langchain_response, error_handler_options)
+def update_error_handler_object(error_handler_obj, status_codes, http_codes, action):
+    """Update error handler object with provided codes and action if the codes exist in the status codes."""
+    matching_codes = [code for code in http_codes if code in status_codes]
+    if matching_codes:
+        error_handler_obj["error_handlers"].append({
+            "type": "DefaultErrorHandler",
+            "response_filters": [{
+                "http_codes": matching_codes,
+                "action": action
+            }]
+        })
+        return True
+    return False
 
-    return error_handler_type
+
+def predict_error_handler_block(base_url, domain_base_url):
+    """Predicts error handler block."""
+    query = f"What are the possible HTTP status codes for the APIs having this base url: '{base_url}'"
+    langchain_response = get_langchain_response(domain_base_url, query)
+
+    if langchain_response == "None":
+        return None
+
+    status_codes = [int(code) for code in re.findall(r'\d+', langchain_response)]
+    error_handler_obj = {
+        "type": "CompositeErrorHandler",
+        "error_handlers": []
+    }
+
+    error_handler_updated = any([
+        update_error_handler_object(error_handler_obj, status_codes, [403], "IGNORE"),
+        update_error_handler_object(error_handler_obj, status_codes, [429, 500], "RETRY")
+    ])
+    
+    if error_handler_updated:
+        return error_handler_obj
+
+    return None
 
 
 def predict_requester_block(connector):
     base_url = predict_base_url(connector['base_url'], connector['sphere_endpoints'])
     authenticator = predict_authenticator_block(base_url, connector['base_url'])
-    # error_handler = predict_error_handler_block(base_url, connector['base_url'])
     request_headers = predict_request_headers(base_url, connector['base_url'], connector['sphere_endpoints'])
     request_parameters = predict_request_parameters(base_url, connector['base_url'], connector['sphere_endpoints'])
-
+    error_handler = predict_error_handler_block(base_url, connector['base_url'])
     requester_block = {
         "type": "HttpRequester",
         "url_base": base_url.strip(),
@@ -227,6 +253,9 @@ def predict_requester_block(connector):
             request_parameters_block[parameter] = "{{config." + parameter.lower().replace('-','_') + "}}"
 
         requester_block["request_parameters"] = request_parameters_block
+
+    if error_handler is not None:
+        requester_block["error_handler"] = error_handler
 
     return requester_block
 
@@ -336,6 +365,7 @@ def main(filename, local=False):
         airbyte_requester_block = extract_airbyte_requester_block(
             connector['name'])
         sphere_requester_block = predict_requester_block(connector)
+        
         requester_block_similarity, matches_count, airbyte_block_pair_count = calculate_line_similarity(
             airbyte_requester_block, sphere_requester_block)
         requesters_comparison[connector['name']] = {
