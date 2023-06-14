@@ -199,7 +199,7 @@ async def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False)
 
     return scraped_urls
 
-
+# Function to scrape the URL using scraping bee
 def scraping_bee_scrapper(url):
     client = ScrapingBeeClient(
         api_key=settings.scraping_bee_api_key)
