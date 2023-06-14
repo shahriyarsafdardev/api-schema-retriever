@@ -23,7 +23,7 @@ async def scrape_domain_api(background_tasks: BackgroundTasks,request: Request):
 
 @router.get('/connectors')
 async def get_connectors():
-    file_content = read_object('airbyte_connectors.json')
+    file_content = read_object('airbyte_lowcode_connectors.json')
     connectors = json.loads(file_content)
     modified_connectors = []
     for connector in connectors:
@@ -31,9 +31,9 @@ async def get_connectors():
         schema_files_count = count_connector_schema_files(connector['name'])
         modified_connector = {
             'name': connector['name'],
-            'exportUrl': connector_zip_url,
-            'pagesIndexed': connector['scraped_page_count'],
-            'schemasIndexed': schema_files_count
+            'export_url': connector_zip_url,
+            'pages_indexed': connector['scraped_page_count'],
+            'schemas_indexed': schema_files_count
         }
         modified_connectors.append(modified_connector)
 
