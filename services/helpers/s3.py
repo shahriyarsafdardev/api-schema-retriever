@@ -1,6 +1,5 @@
 import io
 import boto3
-from services.generators.connector_files_generator import slugify
 from services.helpers.config import settings
 from services.helpers.logger import getLogger
 
