@@ -12,7 +12,7 @@ logger = getLogger()
 async def scrape_domain_api(background_tasks: BackgroundTasks,request: Request):
     data = await request.json()
 
-    background_tasks.add_task(scrape_domain, data['page_url'], data['base_domain_url'])
+    background_tasks.add_task(scrape_domain, data['page_url'], data['base_domain_url'], 4, True)
 
     logger.info(f"Scraping started for the page: {data['page_url']}")
 
