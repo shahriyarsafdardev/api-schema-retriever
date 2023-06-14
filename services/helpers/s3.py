@@ -65,7 +65,6 @@ def list_objects(file_name_filters=[], verbose=False):
 
 
 def count_connector_schema_files(connector_name):
-    connector_name = slugify(connector_name)
     try:
         paginator = s3_client.get_paginator('list_objects_v2')
         page_iterator = paginator.paginate(
@@ -76,16 +75,14 @@ def count_connector_schema_files(connector_name):
             file_count += len([obj for obj in page.get('Contents',
                             []) if not obj['Key'].endswith('/')])
 
-        logger.info(f"Got {file_count} schema files for {connector_name}")
+        logger.info(f"Counted {file_count} schema files for {connector_name}")
         return file_count
     except Exception as e:
         logger.error(f"An error occurred while counting the files: {e}")
         return 0
 
 
-def get_connector_zip_file(connector_name):
-    file_name = f"source-{slugify(connector_name)}.zip"
-
+def get_connector_zip_file(file_name):
     try:
         objects = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=file_name)
         for obj in objects.get('Contents', []):

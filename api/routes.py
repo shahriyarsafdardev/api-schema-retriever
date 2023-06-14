@@ -1,11 +1,9 @@
 import json
-from fastapi.responses import JSONResponse
-from fastapi import APIRouter, Request, HTTPException, Depends, BackgroundTasks
-import os
+from fastapi import APIRouter, Request, BackgroundTasks
+from models.connector import page_count, schema_count, zip_url
 from services.helpers.logger import getLogger
-from services.helpers.s3 import count_connector_schema_files, get_connector_zip_file, read_object
+from services.helpers.s3 import read_object
 from services.scrapers.scraper import scrape_domain
-import asyncio
 
 router = APIRouter()
 logger = getLogger()
@@ -23,16 +21,17 @@ async def scrape_domain_api(background_tasks: BackgroundTasks,request: Request):
 
 @router.get('/connectors')
 async def get_connectors():
-    file_content = read_object('airbyte_lowcode_connectors.json')
+    file_content = read_object('production_connectors.json')
     connectors = json.loads(file_content)
     modified_connectors = []
     for connector in connectors:
-        connector_zip_url = get_connector_zip_file(connector['name'])
-        schema_files_count = count_connector_schema_files(connector['name'])
+        connector_zip_url = zip_url(connector['name'])
+        scraped_pages_count = page_count(connector['base_url'])
+        schema_files_count = schema_count(connector['name'])
         modified_connector = {
             'name': connector['name'],
             'export_url': connector_zip_url,
-            'pages_indexed': connector['scraped_page_count'],
+            'pages_indexed': scraped_pages_count,
             'schemas_indexed': schema_files_count
         }
         modified_connectors.append(modified_connector)
