@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from services.helpers.s3 import read_object, list_objects
-from services.helpers.json import load_json
+from services.helpers.json_loader import load_json
 from urllib.parse import quote
 import re
 
