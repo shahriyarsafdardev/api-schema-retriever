@@ -1,5 +1,5 @@
 from services.helpers.logger import getLogger
-from services.helpers.json import load_json, save_json
+from services.helpers.json_loader import load_json, save_json
 from urllib.parse import urljoin, urlparse, urlunparse, quote
 from services.helpers.s3 import read_object, upload_object, list_objects
 
@@ -20,7 +20,7 @@ def success_percentage(filename, local=False):
 
         logger.info(f'Found {len(file_keys)} files for {connector["name"]}')
         
-        if len(file_keys) < 1:
+        if len(file_keys) > 1:
             more_than_one_file_count += 1
 
     percentage_more_than_one_file = (more_than_one_file_count / total_connectors) * 100
