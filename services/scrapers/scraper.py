@@ -37,6 +37,7 @@ def get_html_with_selenium(page_url, verbose=False):
     options = webdriver.FirefoxOptions()
 
     options.add_argument("--headless")
+    # Loading selenium path from env
     options.binary_location = settings.firefox_bin
 
     service = Service(GeckoDriverManager().install())
