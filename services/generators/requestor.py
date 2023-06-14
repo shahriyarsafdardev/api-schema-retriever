@@ -400,5 +400,5 @@ def main(filename, local=False):
         json.dump({"overall_similarity": round(overall_similarity, 2),
                   "requesters": requesters_comparison}, f, indent=4)
 
-
-main('data/airbyte_lowcode_connectors.json', local=True)
+if __name__ == "__main__":
+    main('data/airbyte_lowcode_connectors.json', local=True)

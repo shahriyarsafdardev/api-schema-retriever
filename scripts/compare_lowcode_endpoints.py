@@ -43,12 +43,14 @@ def compare_lowcode_endpoints(filename, local=False):
         # perform comparison
         common_endpoints = []
         connector['sphere_endpoints'] = [re.sub(replace_argument_pattern, 'param', url) for url in connector['sphere_endpoints']]
-        connector['existing_airbyte_endpoints'] = [re.sub(replace_argument_pattern, 'param', url) for url in connector['existing_airbyte_endpoints']]
+        connector['existing_airbyte_endpoints'] = [re.sub(replace_argument_pattern, 'param', url).strip('!?/.{') for url in connector['existing_airbyte_endpoints']]
         for idx, airbyte_endpoint in enumerate(connector['existing_airbyte_endpoints']):
             split_airbyte_endpoint = airbyte_endpoint.split('?')
             if len(split_airbyte_endpoint) > 1:
                 connector['existing_airbyte_endpoints'][idx] = f"{split_airbyte_endpoint[0]}?param"
 
+        connector['sphere_endpoints'] = list(set(connector['sphere_endpoints'])) 
+        connector['existing_airbyte_endpoints'] = list(set(connector['existing_airbyte_endpoints'])) 
         # new_set.append({'sphere_endpoints': sphere_endpoints, 'existing_airbyte_endpoints': existing_airbyte_endpoints})
 
         # with open('data/test_replacement.json', 'w') as f:

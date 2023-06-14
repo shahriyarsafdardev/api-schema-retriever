@@ -50,9 +50,8 @@ def get_html_with_selenium(page_url, verbose=False):
 
     try:
         driver.get(page_url)
-        # time.sleep(2)
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-
+        time.sleep(5)
+        
         logger.info("Page HTML: %s", driver.page_source)
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')

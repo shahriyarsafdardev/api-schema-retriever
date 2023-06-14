@@ -21,10 +21,11 @@ def clean_sphere_endpoints(filename, local=False):
                 parsed_endpoint = urlparse(endpoint)
                 # cleaned = parsed_endpoint._replace(query="", fragment="")
                 cleaned = parsed_endpoint._replace(fragment="")
-                cleaned = urlunparse(cleaned).rstrip('!?/.')
+                cleaned = urlunparse(cleaned).rstrip('!?/.{')
                 cleaned = cleaned.split('?')
                 if len(cleaned) > 1:
-                    cleaned = f"{cleaned[0]}?param"
+                    cleaned_endpoints.append(cleaned[0].rstrip('!?/.{'))    
+                    cleaned = f"{cleaned[0].rstrip('!?/.{')}?param"
                 else:
                     cleaned = cleaned[0]
                 cleaned_endpoints.append(cleaned)

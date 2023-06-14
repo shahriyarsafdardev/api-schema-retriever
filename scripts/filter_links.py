@@ -1,52 +1,48 @@
 import json
-import re
 from services.helpers.logger import getLogger
+from services.generators.requestor import predict_base_url
 
 logger = getLogger()
-filename = 'airbyte_connectors.json'
+filename = 'data/airbyte_lowcode_connectors.json'
 
 with open(filename, 'r') as f:
     connectors = json.load(f)
 
-filtered_connectors = []
 
 for connector in connectors:
+    filtered_endpoints = []
+
+    # skip if not a lowcode connector
     if connector['airbyte_status'] != 'lowcode-connector':
         logger.info(f"Skipping {connector['name']} because it is not a lowcode connector")
         continue
 
+    # skip if there are no sphere endpoints
     if not connector.get('sphere_endpoints', None):
         logger.info(f"Skipping {connector['name']} because it does not have endpoints")
         continue
 
-    # base_url_components = list(filter(None, re.split('\.|-|/',connector['base_url'])))
-    base_url_components = list(filter(lambda x: x not in ['https:', 'www', 'com', ''], re.split('\.|-|/',connector['base_url'])))
-    logger.info(f"Split base url for {connector['name']}: {base_url_components}")
-
-    filtered_urls = []
+    # predict the api base url
+    logger.info(f"Predicting the api base url for {connector['name']}")
+    api_base_url = predict_base_url(connector['base_url'], connector['sphere_endpoints'], connector['name'])
+    logger.info(f"Predicted {api_base_url} for {connector['name']}")
 
     for endpoint in connector['sphere_endpoints']:
-        if endpoint.endswith(('.jpg', '.png', '.jpeg', '.gif', '.ico')):
-            continue
-
+        # keep endpoints starting with /
         if endpoint.startswith('/'):
-            filtered_urls.append(endpoint)
+            filtered_endpoints.append(endpoint)
             continue
 
-        has_base_url_substring = any(substr in endpoint for substr in base_url_components)
-        if has_base_url_substring:
-            filtered_urls.append(endpoint)
+        # keep endpoints starting with the api base url
+        if endpoint.startswith(api_base_url):
+            filtered_endpoints.append(endpoint)
+        
 
-    connector['filtered_endpoints'] = filtered_urls
-    connector['filtered_endpoints_count'] = len(filtered_urls)
-    connector['filtered_out'] = [element for element in connector['sphere_endpoints'] if element not in connector['filtered_endpoints']]
-    connector['filtered_out_count'] = len(connector['filtered_out'])
+    # save the filtered endpoints and their count
+    connector['filtered_sphere_endpoints'] = filtered_endpoints
+    connector['filtered_sphere_endpoints_count'] = len(filtered_endpoints)
 
-    filtered_connectors.append(connector)
-
-    logger.info(f"{len(filtered_urls)} for {connector['name']}")
-
-    with open('filtered_airbyte_connectors.json', 'w') as f:
-        json.dump(filtered_connectors, f, indent=4)
+    with open('data/filtered_airbyte_connectors.json', 'w') as f:
+        json.dump(connectors, f, indent=4)
 
 

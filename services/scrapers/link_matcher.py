@@ -9,7 +9,13 @@ def detect_links(text):
         
     # Step 2
     # pattern_2 = r"(?<=[\s\"'(\[`])(?:http|\/)[^\s\"'\)\]`]+"
-    pattern_2 = r"(?:(?<=\s)|(?<=^))(?:http|\/)[^\s\"'\)\]`]+"
+    
+    # This pattern matches links that have no character or a space before them
+    # pattern_2 = r"(?:(?<=\s)|(?<=^))(?:http|\/)[^\s\"'\)\]`]+"
+    
+    # This pattern matches links that have no character or any character before them
+    pattern_2 = r"(?:(?<=.)|(?<=^))(?:http|\/)[^\s\"'\)\]`]+"
+    
     links = re.findall(pattern_2, text)
 
     # Step 3
