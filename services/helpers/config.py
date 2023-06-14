@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     openai_api_key: str
     sphere_aws_s3_bucket_name: str
     scraping_bee_api_key: str
+    firefox_bin: str
 
     class Config:
         env_file = ".env"

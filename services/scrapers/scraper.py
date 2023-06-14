@@ -31,42 +31,43 @@ def get_html_with_selenium(page_url, verbose=False):
     This function uses Selenium with Firefox to get the HTML content of the given page URL.
 
     :param page_url: String containing the URL from which the HTML content is to be downloaded.
-    :return: String containing the HTML content of the webpage. 
+    :return: String containing the HTML content of the webpage.
     """
 
     options = webdriver.FirefoxOptions()
 
     options.add_argument("--headless")
-    options.binary_location = '/Applications/Firefox.app/Contents/MacOS/firefox'
-    
+    # Loading selenium path from env
+    options.binary_location = settings.firefox_bin
+
     service = Service(GeckoDriverManager().install())
-    
+
     # this is where it started to scrap the page
     driver = webdriver.Firefox(service=service, options=options)
-    
-   
+
+
     driver.set_page_load_timeout(30)
 
-    try:        
+    try:
         driver.get(page_url)
         # time.sleep(2)
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, 'body')))
-        
+
         logger.info("Page HTML: %s", driver.page_source)
-    
+
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         if verbose:
             logger.info("Page HTML: %s", soup.prettify())
-        
-        
+
+
     except Exception as e:
-        
+
         logger.error("Error parsing HTML: %s", str(e), exc_info=True)
         soup = None
-    
-    
+
+
     driver.quit()
-    
+
     return str(soup)
 
 def download_html(page_url, verbose=False):
@@ -83,7 +84,7 @@ def download_html(page_url, verbose=False):
 
         if verbose:
             logger.info("Downloaded HTML from: %s", page_url)
-        
+
         return str(soup)
 
     except HTTPError as err:
@@ -94,7 +95,7 @@ def download_html(page_url, verbose=False):
 
             if verbose:
                 logger.info("Downloaded HTML from: %s", page_url)
-            
+
             return str(soup)
 
         if verbose:
@@ -151,9 +152,9 @@ def extract_linked_urls(html, page_url, verbose=False):
 
     return clean_urls
 
-def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
+async def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
     """
-    This function performs the web scraping operation starting from the page_url, 
+    This function performs the web scraping operation starting from the page_url,
     it then continues to scrape all the linked pages within the same domain (base_domain_url).
 
     :param page_url: String containing the start URL to begin the scraping process.
@@ -162,14 +163,14 @@ def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
     """
     to_scrape_urls = set([page_url])
     scraped_urls = set()
-    
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         with tqdm(total=len(to_scrape_urls), desc="URLs processed") as pbar:
             while to_scrape_urls:
                 # Pick a URL from the to_scrape_urls set and remove it from the set
                 url = to_scrape_urls.pop()
                 scraped_urls.add(url)
-                
+
                 future = executor.submit(download_html, url, verbose=verbose)
                 html = future.result()
                 if not html:
@@ -198,7 +199,7 @@ def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
 
     return scraped_urls
 
-
+# Function to scrape the URL using scraping bee
 def scraping_bee_scrapper(url):
     client = ScrapingBeeClient(
         api_key=settings.scraping_bee_api_key)
