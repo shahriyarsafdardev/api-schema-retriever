@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette import status
 
-from routes import router
+from api.routes import router
 
 class CORSPreflightMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
