@@ -30,6 +30,7 @@ async def get_connectors():
         file_content = read_object('production_connectors.json')
         connectors = json.loads(file_content)
         modified_connectors = []
+
         for connector in connectors:
             connector_zip_url = zip_url(connector['name'])
             scraped_pages_count = page_count(connector['base_url'])
