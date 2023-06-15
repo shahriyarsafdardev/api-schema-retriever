@@ -8,7 +8,6 @@ from services.helpers.s3 import read_object
 
 logger = getLogger()
 AIRBYTE_CONNECTORS_FILE = 'airbyte_connectors.json'
-PRODUCTION_CONNECTORS_FILE = 'production_connectors.json'
 
 
 def embedding(connector_name):

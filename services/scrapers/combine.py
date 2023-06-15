@@ -10,7 +10,6 @@ from services.scrapers.batch_combine import convert_html_to_md
 
 logger = getLogger()
 AIRBYTE_CONNECTORS_FILE = 'airbyte_connectors.json'
-PRODUCTION_CONNECTORS_FILE = 'production_connectors.json'
 
 
 def combine(connector_name):
@@ -32,7 +31,7 @@ def combine(connector_name):
         file_keys = list_objects([quoted_base_url, ".html"])
 
         combined_file_content = ''
-        for file_key in file_keys[:20]:
+        for file_key in file_keys:
             logger.info("Generating .md file for {}".format(file_key))
             file_content = convert_html_to_md(read_object(file_key))
             upload_object(io.BytesIO(file_content.encode('utf-8')), file_key.rsplit('.html', 1)[0] + ".md")

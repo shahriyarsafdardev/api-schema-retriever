@@ -29,12 +29,6 @@ async def create_connector(background_tasks: BackgroundTasks, request: Request):
     background_tasks.add_task(process_domain_in_order, data)
     logger.info(f"Scraping started for the page: {data['page_url']}")
 
-    add_connector({
-        'name': data['name'],
-        'base_url': data['base_domain_url'],
-        'start_url': data['page_url']
-    })
-
     return { "success": f"Scraping started for: {data['page_url']}" }
 
 
