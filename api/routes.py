@@ -1,7 +1,6 @@
 import json
 from fastapi import APIRouter, Request, BackgroundTasks
-from models.connector import add_connector, page_count, schema_count, zip_url
-from services.generators.connector_files_generator import recreate_connector
+from models.connector import page_count, recreate_connector, schema_count, zip_url
 from services.helpers.logger import getLogger
 from services.helpers.s3 import read_object
 from services.scrapers.domain_processor import PRODUCTION_CONNECTORS_FILE, combine_domain, embed_domain, generate_connector_files, scrape_pages
@@ -23,9 +22,8 @@ async def create_connector(background_tasks: BackgroundTasks, request: Request):
     data = await request.json()
     production_file_content = read_object(PRODUCTION_CONNECTORS_FILE)
     production_connectors = json.loads(production_file_content)
-    for connector in production_connectors:
-        if connector['name'].lower() == data['name'].lower() or connector['base_url'].lower() == data['base_domain_url'].lower():
-            return {"success": f"Connector with name: {data['name']} already exists!"}
+    if any((connector['name'].lower() == data['name'].lower() or connector['base_url'].lower() == data['base_domain_url'].lower()) for connector in production_connectors):
+        return {"success": f"Connector with name: {data['name']} already exists!"}
     background_tasks.add_task(process_domain_in_order, data)
     logger.info(f"Scraping started for the page: {data['page_url']}")
 
