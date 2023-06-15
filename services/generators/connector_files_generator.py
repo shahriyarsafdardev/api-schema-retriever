@@ -4,7 +4,7 @@ import json
 import inflect
 import zipfile
 from collections import defaultdict
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import quote, urlparse, urlunparse
 from analysis.compare_authentication import get_langchain_response
 from services.helpers.logger import getLogger
 from services.helpers.s3 import delete_folder, read_object, upload_object, delete_object, bucket_name
@@ -140,11 +140,20 @@ async def create_connector_files(connector_name, base_documentation_url, schema_
     logger.info('All short urls have been parsed')
 
     if schema_objects:
-        # step 3 - upload schema files
+        # step 3 - upload bulk concise and schema files
         folder_name = f"source-{slugify(connector_name)}"
         logger.info('Uploading schemas to S3')
         zip_file_key = f"{folder_name}.zip"
         zip_buffer = io.BytesIO()
+
+        # read and upload concise bulk file
+        quoted_base_url = quote(base_documentation_url, safe="")
+        bulk_concise_file = read_object(f"{quoted_base_url}-bulk-concise.md")
+        upload_object(io.BytesIO(bulk_concise_file.encode('utf-8')), f"{folder_name}/{quoted_base_url}-bulk-concise.md")
+        with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_DEFLATED) as archive:
+                archive.writestr(
+                    f"{folder_name}/{quoted_base_url}-bulk-concise.md", bulk_concise_file)
+
         for object_name, schema in schema_objects.items():
             formatted_schema = json.dumps(schema, indent=4)
             upload_object(io.BytesIO(formatted_schema.encode(
