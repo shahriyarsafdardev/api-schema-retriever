@@ -113,7 +113,7 @@ def generate_file_name(url):
         return "Error"
 
 
-async def create_connector_files(connector_name, base_documentation_url, schema_objects=None):
+def create_connector_files(connector_name, base_documentation_url, schema_objects=None):
     connectors = json.loads(read_object("airbyte_connectors.json"))
     short_urls = [obj['sphere_endpoints']
                   for obj in connectors if obj.get('name') == connector_name][0]

@@ -29,8 +29,9 @@ def add_connector_in_json_files(connector_name, page_url, base_domain_url, pages
         'base_url': base_domain_url,
         'start_url': page_url
     }
-    airbyte_connectors.append(connector.update({'scraped_page_count': pages_count}))
     production_connectors.append(connector)
+    connector.update({'scraped_page_count': pages_count})
+    airbyte_connectors.append(connector)
     upload_object(io.BytesIO(json.dumps(airbyte_connectors, indent=4).encode(
             'utf-8')), AIRBYTE_CONNECTORS_FILE, {'CacheControl': 'no-store'})
     upload_object(io.BytesIO(json.dumps(production_connectors, indent=4).encode(
@@ -82,7 +83,7 @@ def unit_combine(connector_name):
             continue
 
         page_count = connector.get('scraped_page_count', None)
-        if not page_count or connector['airbyte_status'] != 'lowcode-connector':
+        if not page_count:
             logger.info("No pages scrapped for {}".format(connector['name']))
             return
 
@@ -128,9 +129,6 @@ def unit_embeddings(connector_name):
             continue
 
         # reading the concise bulk file
-        if connector['airbyte_status'] != 'lowcode-connector':
-            return
-
         quoted_base_url = quote(connector['base_url'], safe="")
         concise_bulk_file = read_object(quoted_base_url + '-bulk-concise' + '.md')
 

@@ -151,7 +151,7 @@ def extract_linked_urls(html, page_url, verbose=False):
 
     return clean_urls
 
-async def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
+def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
     """
     This function performs the web scraping operation starting from the page_url,
     it then continues to scrape all the linked pages within the same domain (base_domain_url).
