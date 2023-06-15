@@ -4,17 +4,13 @@ from services.helpers.logger import getLogger
 import json
 import html2text
 import io
+from services.scrapers.domain_processor import convert_html_to_md
+from services.scrapers.link_matcher import detect_links
+from termcolor import colored
 from collections import OrderedDict
 
 logger = getLogger()
 
-
-def convert_html_to_md(text):
-    converter = html2text.HTML2Text()
-    converter.ignore_links = True
-    converter.ignore_images = True
-    converter.body_width = 0
-    return converter.handle(text)
 
 
 def create_md_files(filename, local=False):
