@@ -4,15 +4,24 @@ from models.connector import add_connector, page_count, schema_count, zip_url
 from services.generators.connector_files_generator import create_empty_files_on_s3
 from services.helpers.logger import getLogger
 from services.helpers.s3 import read_object
-from services.scrapers.scraper import scrape_domain
+from services.scrapers.domain_processor import combine_domain, embed_domain, generate_connector_files, scrape_pages
 
 router = APIRouter()
 logger = getLogger()
 
-@router.post('/scrape_domain')
-async def scrape_domain_api(background_tasks: BackgroundTasks, request: Request):
+
+def process_domain_in_order(data):
+    # This function will be run in the background after sending the response.
+    scrape_pages(data['name'], data['page_url'], data['base_domain_url'])
+    combine_domain(data['name'])
+    embed_domain(data['name'])
+    generate_connector_files(data['name'], data['base_domain_url'])
+
+
+@router.post('/create_connector')
+async def create_connector(background_tasks: BackgroundTasks, request: Request):
     data = await request.json()
-    background_tasks.add_task(scrape_domain, data['page_url'], data['base_domain_url'], 4, True)
+    background_tasks.add_task(process_domain_in_order, data)
     logger.info(f"Scraping started for the page: {data['page_url']}")
 
     add_connector({
