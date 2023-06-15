@@ -11,7 +11,8 @@ def clean_sphere_endpoints(filename, local=False):
 
     for connector in connectors:
         if connector['airbyte_status'] != 'lowcode-connector':
-            logger.info(f"Skipping {connector['name']} because it is not a lowcode connector")
+            logger.info(
+                f"Skipping {connector['name']} because it is not a lowcode connector")
             continue
 
         cleaned_endpoints = []
@@ -24,7 +25,7 @@ def clean_sphere_endpoints(filename, local=False):
                 cleaned = urlunparse(cleaned).rstrip('!?/.{')
                 cleaned = cleaned.split('?')
                 if len(cleaned) > 1:
-                    cleaned_endpoints.append(cleaned[0].rstrip('!?/.{'))    
+                    # cleaned_endpoints.append(cleaned[0].rstrip('!?/.{'))
                     cleaned = f"{cleaned[0].rstrip('!?/.{')}?param"
                 else:
                     cleaned = cleaned[0]
@@ -38,7 +39,6 @@ def clean_sphere_endpoints(filename, local=False):
 
         with open(filename, 'w') as f:
             json.dump(connectors, f, indent=4)
-
 
 
 if __name__ == '__main__':

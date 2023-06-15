@@ -3,13 +3,11 @@ from urllib.parse import quote
 from services.helpers.logger import getLogger
 import json
 import html2text
-import re
 import io
-from services.scrapers.link_matcher import detect_links
-from termcolor import colored
 from collections import OrderedDict
 
 logger = getLogger()
+
 
 def convert_html_to_md(text):
     converter = html2text.HTML2Text()
@@ -17,6 +15,7 @@ def convert_html_to_md(text):
     converter.ignore_images = True
     converter.body_width = 0
     return converter.handle(text)
+
 
 def create_md_files(filename, local=False):
     if local:
@@ -37,42 +36,26 @@ def create_md_files(filename, local=False):
         file_keys = list_objects([quoted_base_url, ".html"])
 
         combined_file_content = ''
-        for file_key in file_keys[:20]:
+        for file_key in file_keys:
             logger.info("Generating .md file for {}".format(file_key))
             file_content = convert_html_to_md(read_object(file_key))
-            upload_object(io.BytesIO(file_content.encode('utf-8')), file_key.rsplit('.html', 1)[0] + ".md")
+            upload_object(io.BytesIO(file_content.encode('utf-8')),
+                          file_key.rsplit('.html', 1)[0] + ".md")
             combined_file_content += file_content + "\n"
 
-        upload_object(io.BytesIO(combined_file_content.encode('utf-8')), quoted_base_url + '-bulk' + '.md')
+        upload_object(io.BytesIO(combined_file_content.encode(
+            'utf-8')), quoted_base_url + '-bulk' + '.md')
 
         # this code splits the text to paragraphs then converts to ordereddict to ensure uniqueness and keep the correct order
         paragraphs = combined_file_content.split("\n\n")
         ordered_dict = OrderedDict.fromkeys(paragraphs)
         unique_paragraphs = list(ordered_dict.keys())
-        upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode('utf-8')), quoted_base_url + '-bulk-concise' + '.md')
+        upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode(
+            'utf-8')), quoted_base_url + '-bulk-concise' + '.md')
 
-        extracted_links = []
-        for paragraph in unique_paragraphs:
-            links = detect_links(paragraph)
-            extracted_links.extend(links)
+        logger.info(f"Uploaded concise bulk for {connector['name']}")
 
-            for link in links:
-                context_start = max(0, paragraph.find(link) - 150)
-                context_end = min(len(paragraph), paragraph.find(link) + len(link) + 150)
-                logger.info(colored(paragraph[context_start:paragraph.find(link)], 'blue') +
-                            colored(link, 'red') +
-                            colored(paragraph[paragraph.find(link)+len(link):context_end], 'blue'))
 
-        extracted_links = list(set(extracted_links))
-        connector['endpoint_count'] = len(extracted_links)
-        connector['sphere_endpoints'] = extracted_links
-        
-        if local:
-            with open(filename, 'w') as f:
-                json.dump(connectors, f, indent=4)
-        else:
-            updated_connectors = json.dumps(connectors, indent=4)
-            file_obj = io.BytesIO(updated_connectors.encode('utf-8'))
-            upload_object(file_obj, filename, extraArgs={'CacheControl': 'no-store'})
 # Usage:
-create_md_files('airbyte_connectors.json', local=True)
+if __name__ == "__main__":
+    create_md_files('airbyte_connectors.json', local=True)
