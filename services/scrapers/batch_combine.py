@@ -2,19 +2,11 @@ from services.helpers.s3 import read_object, upload_object, list_objects
 from urllib.parse import quote
 from services.helpers.logger import getLogger
 import json
-import html2text
 import io
+from services.scrapers.combine import convert_html_to_md
 from collections import OrderedDict
 
 logger = getLogger()
-
-
-def convert_html_to_md(text):
-    converter = html2text.HTML2Text()
-    converter.ignore_links = True
-    converter.ignore_images = True
-    converter.body_width = 0
-    return converter.handle(text)
 
 
 def create_md_files(filename, local=False):

@@ -4,14 +4,12 @@ import json
 import inflect
 import zipfile
 from collections import defaultdict
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import quote, urlparse
 from analysis.compare_authentication import get_langchain_response
 from services.helpers.logger import getLogger
-from services.helpers.s3 import delete_folder, read_object, upload_object, delete_object, bucket_name
+from services.helpers.s3 import read_object, upload_object, bucket_name
 
 logger = getLogger()
-
-
 p = inflect.engine()
 
 prompt_examples = """
@@ -20,45 +18,6 @@ Description: This endpoint returns ..........
 Type: corresponding restful api method
 Returned Object: a single word representing the object being returned by this endpoint
 """
-
-
-def slugify(s):
-    s = s.lower()
-    s = re.sub(r'[^a-z0-9 -]', '', s)
-    s = re.sub(r'\s+', '-', s)
-    s = s.strip()
-    return s
-
-
-def create_empty_files_on_s3(connector_name):
-    folder_name = f"source-{slugify(connector_name)}"
-    zip_file_key = f"{folder_name}.zip"
-    zip_buffer = io.BytesIO()
-
-    upload_object(io.BytesIO(b''),
-                  f"{folder_name}/schemas/", {'CacheControl': 'no-store'})
-
-    with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_DEFLATED) as archive:
-        pass
-
-    zip_buffer.seek(0)
-    upload_object(zip_buffer, zip_file_key, {'CacheControl': 'no-store'})
-
-
-async def remove_connector_data(connector_name, base_documentation_url):
-    logger.info(f"Removing data for connector : {base_documentation_url}")
-    s3_folder_name = f"source-{slugify(connector_name)}"
-    # Delete existing s3 files for the domain
-    delete_folder(s3_folder_name)
-    connectors = json.loads(read_object("airbyte_connectors.json"))
-    for connector in connectors:
-        if connector['name'] == connector_name and 'zip_url' in connector:
-            connector['zip_url'] = None
-            logger.info(f"Updated the connector {connector_name} zip_url")
-            break
-    upload_object(io.BytesIO(json.dumps(connectors, indent=4).encode(
-        'utf-8')), f"airbyte_connectors.json", {'CacheControl': 'no-store'})
-    logger.info(f"Removed data for connector : {base_documentation_url}")
 
 
 def slugify(s):
@@ -84,7 +43,7 @@ def string_to_dict(s):
 
 def generate_schemas_with_state(base_documentation_url, endpoint):
     endpoint_details = string_to_dict(get_langchain_response(base_documentation_url,
-     f"""Describe the {endpoint} endpoint in a format that matches the following examples: {prompt_examples}.
+                                                             f"""Describe the {endpoint} endpoint in a format that matches the following examples: {prompt_examples}.
         Note that the "Returned Object" should always be plural, lowercase with underscores instead of spaces."""))
 
     if endpoint_details is not None and \
@@ -113,12 +72,12 @@ def generate_file_name(url):
         return "Error"
 
 
-async def create_connector_files(connector_name, base_documentation_url, schema_objects=None):
+def create_connector_files(connector, schema_objects=None):
     connectors = json.loads(read_object("airbyte_connectors.json"))
     short_urls = [obj['sphere_endpoints']
-                  for obj in connectors if obj.get('name') == connector_name][0]
-    logger.info(f'Read short urls from S3 for {connector_name}')
-    logger.info(f'Short urls to generate schema: {connector_name}')
+                  for obj in connectors if obj.get('name') == connector['name']][0]
+    logger.info(f"Read short urls from S3 for {connector['name']}")
+    logger.info(f"Short urls to generate schema: {connector['name']}")
 
     if not schema_objects:
         schema_objects = defaultdict(list)
@@ -127,7 +86,7 @@ async def create_connector_files(connector_name, base_documentation_url, schema_
     for idx, short_url in enumerate(short_urls):
 
         endpoint_details = generate_schemas_with_state(
-            base_documentation_url, short_url)
+            connector['base_url'], short_url)
         if endpoint_details:
             singular_object = p.singular_noun(
                 endpoint_details['Returned Object'])
@@ -140,16 +99,26 @@ async def create_connector_files(connector_name, base_documentation_url, schema_
     logger.info('All short urls have been parsed')
 
     if schema_objects:
-        # step 3 - upload schema files
-        folder_name = f"source-{slugify(connector_name)}"
+        # step 3 - upload bulk concise and schema files
+        folder_name = f"source-{slugify(connector['name'])}"
         logger.info('Uploading schemas to S3')
         zip_file_key = f"{folder_name}.zip"
         zip_buffer = io.BytesIO()
+
+        # read and upload concise bulk file
+        quoted_base_url = quote(connector['base_url'], safe="")
+        bulk_concise_file = read_object(f"{quoted_base_url}-bulk-concise.md")
+        upload_object(io.BytesIO(bulk_concise_file.encode('utf-8')),
+                      f"{folder_name}/{quoted_base_url}-bulk-concise.md")
+        with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_STORED) as archive:
+            archive.writestr(
+                f"{folder_name}/{quoted_base_url}-bulk-concise.md", bulk_concise_file)
+
         for object_name, schema in schema_objects.items():
             formatted_schema = json.dumps(schema, indent=4)
             upload_object(io.BytesIO(formatted_schema.encode(
                 'utf-8')), f"{folder_name}/schemas/{object_name}.json", {'CacheControl': 'no-store'})
-            with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_DEFLATED) as archive:
+            with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_STORED) as archive:
                 archive.writestr(
                     f"{folder_name}/schemas/{object_name}.json", formatted_schema)
 
@@ -157,20 +126,4 @@ async def create_connector_files(connector_name, base_documentation_url, schema_
         upload_object(zip_buffer, zip_file_key, {'CacheControl': 'no-store'})
         logger.info('source zip folder link :')
         logger.info(f"https://{bucket_name}.s3.amazonaws.com/{zip_file_key}")
-
-        connectors = json.loads(read_object("airbyte_connectors.json"))
-        for connector in connectors:
-            if connector['name'] == connector_name:
-                connector['zip_url'] = f"https://{bucket_name}.s3.amazonaws.com/{zip_file_key}"
-                logger.info(f"Updated connector:")
-                logger.info(f"{connector}")
-                break
-
-        upload_object(io.BytesIO(json.dumps(connectors, indent=4).encode(
-            'utf-8')), f"airbyte_connectors.json", {'CacheControl': 'no-store'})
-        logger.info(f"Created schema for connector : {base_documentation_url}")
-
-
-async def recreate_connector(connector_name, connector_base_url):
-    await remove_connector_data(connector_name, connector_base_url)
-    await create_connector_files(connector_name, connector_base_url)
+        logger.info(f"Created schema for connector : {connector['base_url']}")

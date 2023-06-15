@@ -21,3 +21,15 @@ def store_chunks(chunks):
         except Exception as e:
             logger.error(
                 f"Something went wrong while storing vectors to pinecone: {e}")
+
+
+def delete_vectors(filters):
+    try:
+        index.delete(
+            filter=filters
+        )
+        logger.info(
+            f"Deleted vectors from Pinecone with filters: {filters}")
+    except Exception as e:
+        logger.error(
+            f"Something went wrong while deleting vectors from Pinecone: {e}")
