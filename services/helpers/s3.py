@@ -1,17 +1,35 @@
 import io
+import re
 import boto3
+from botocore.config import Config
 from services.helpers.config import settings
 from services.helpers.logger import getLogger
 
 logger = getLogger()
+config = Config(
+    retries={
+        'max_attempts': 10,
+        'mode': 'standard'
+    },
+    max_pool_connections=50
+)
 
 s3_client = boto3.client(
     's3',
     aws_access_key_id=settings.sphere_aws_access_key_id,
     aws_secret_access_key=settings.sphere_aws_secret_access_key,
+    config=config
 )
 
 bucket_name = settings.sphere_aws_s3_bucket_name
+
+
+def slugify(s):
+    s = s.lower()
+    s = re.sub(r'[^a-z0-9 -]', '', s)
+    s = re.sub(r'\s+', '-', s)
+    s = s.strip()
+    return s
 
 
 def upload_object(file, key, extraArgs={}, verbose=False):
@@ -39,6 +57,15 @@ def delete_object(key, verbose=False):
         s3_client.delete_object(Bucket=bucket_name, Key=key)
         if verbose:
             logger.info(f"Deleted file from S3 bucket {bucket_name} with key: {key}")
+    except Exception as e:
+        logger.error(f"An error occurred while deleting the file: {e}")
+
+def delete_folder(folder_name,verbose=False):
+    try:
+        for obj in s3_client.list_objects(Bucket=bucket_name, Prefix=folder_name)['Contents']:
+            s3_client.delete_object(Bucket=bucket_name, Key=obj['Key'])
+            if verbose:
+                logger.info(f"Deleted file {obj['Key']} from S3 bucket {bucket_name}")
     except Exception as e:
         logger.error(f"An error occurred while deleting the file: {e}")
 
