@@ -3,7 +3,7 @@ import io
 import json
 import html2text
 from logging import getLogger
-from pipes import quote
+from urllib.parse import quote
 from services.generators.smart_search import detect_get, smart_search_new_new
 from services.helpers.s3 import list_objects, read_object, upload_object
 

@@ -1,6 +1,6 @@
 import json
 from logging import getLogger
-from pipes import quote
+from urllib.parse import quote
 from services.helpers.pinecone_db import store_chunks
 from services.scrapers.embedding_helper import split_into_chunks, text_slice_to_vector
 from services.helpers.s3 import read_object

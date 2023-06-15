@@ -2,7 +2,7 @@ from services.helpers.s3 import read_object, upload_object, list_objects
 from urllib.parse import quote
 from services.helpers.logger import getLogger
 import json
-import html2text
+import re
 import io
 from services.scrapers.combine import convert_html_to_md
 from services.scrapers.link_matcher import detect_links
