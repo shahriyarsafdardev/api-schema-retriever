@@ -4,7 +4,7 @@ from models.connector import add_connector, page_count, schema_count, zip_url
 from services.generators.connector_files_generator import create_empty_files_on_s3
 from services.helpers.logger import getLogger
 from services.helpers.s3 import read_object
-from services.scrapers.domain_processor import combine_domain, embed_domain, generate_connector_files, scrape_pages
+from services.scrapers.domain_processor import PRODUCTION_CONNECTORS_FILE, combine_domain, embed_domain, generate_connector_files, scrape_pages
 
 router = APIRouter()
 logger = getLogger()
@@ -21,6 +21,11 @@ def process_domain_in_order(data):
 @router.post('/create_connector')
 async def create_connector(background_tasks: BackgroundTasks, request: Request):
     data = await request.json()
+    production_file_content = read_object(PRODUCTION_CONNECTORS_FILE)
+    production_connectors = json.loads(production_file_content)
+    for connector in production_connectors:
+        if connector['name'] == data['name']:
+            return { "success": f"Connector with name: {data['name']} already exists!" }
     background_tasks.add_task(process_domain_in_order, data)
     logger.info(f"Scraping started for the page: {data['page_url']}")
 
@@ -30,7 +35,7 @@ async def create_connector(background_tasks: BackgroundTasks, request: Request):
         'start_url': data['page_url']
     })
 
-    return {"success": f"Scraping started for: {data['page_url']}"}
+    return { "success": f"Scraping started for: {data['page_url']}" }
 
 
 @router.get('/connectors')
