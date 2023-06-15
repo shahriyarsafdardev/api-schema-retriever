@@ -61,11 +61,10 @@ def remove_connector_data(connector_name, base_documentation_url):
 
 def recreate_connector(connector):
     remove_connector_data(
-        connector['name'], connector['base_documentation_url'])
+        connector['name'], connector['base_url'])
     logger.info(
-        f"\nStart generating embeddings for connector : {connector['base_documentation_url']}")
-    embedding(connector['name'])
+        f"\nStart generating embeddings for connector : {connector['base_url']}")
+    embedding(connector)
     logger.info(
-        f"\nGenerated embeddings for connector : {connector['base_documentation_url']}")
-    create_connector_files(
-        connector['name'], connector['base_documentation_url'])
+        f"\nGenerated embeddings for connector : {connector['base_url']}")
+    create_connector_files(connector)

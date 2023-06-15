@@ -72,12 +72,12 @@ def generate_file_name(url):
         return "Error"
 
 
-def create_connector_files(connector_name, base_documentation_url, schema_objects=None):
+def create_connector_files(connector, schema_objects=None):
     connectors = json.loads(read_object("airbyte_connectors.json"))
     short_urls = [obj['sphere_endpoints']
-                  for obj in connectors if obj.get('name') == connector_name][0]
-    logger.info(f'Read short urls from S3 for {connector_name}')
-    logger.info(f'Short urls to generate schema: {connector_name}')
+                  for obj in connectors if obj.get('name') == connector['name']][0]
+    logger.info(f"Read short urls from S3 for {connector['name']}")
+    logger.info(f"Short urls to generate schema: {connector['name']}")
 
     if not schema_objects:
         schema_objects = defaultdict(list)
@@ -86,7 +86,7 @@ def create_connector_files(connector_name, base_documentation_url, schema_object
     for idx, short_url in enumerate(short_urls):
 
         endpoint_details = generate_schemas_with_state(
-            base_documentation_url, short_url)
+            connector['base_url'], short_url)
         if endpoint_details:
             singular_object = p.singular_noun(
                 endpoint_details['Returned Object'])
@@ -100,13 +100,13 @@ def create_connector_files(connector_name, base_documentation_url, schema_object
 
     if schema_objects:
         # step 3 - upload bulk concise and schema files
-        folder_name = f"source-{slugify(connector_name)}"
+        folder_name = f"source-{slugify(connector['name'])}"
         logger.info('Uploading schemas to S3')
         zip_file_key = f"{folder_name}.zip"
         zip_buffer = io.BytesIO()
 
         # read and upload concise bulk file
-        quoted_base_url = quote(base_documentation_url, safe="")
+        quoted_base_url = quote(connector['base_url'], safe="")
         bulk_concise_file = read_object(f"{quoted_base_url}-bulk-concise.md")
         upload_object(io.BytesIO(bulk_concise_file.encode('utf-8')),
                       f"{folder_name}/{quoted_base_url}-bulk-concise.md")
@@ -126,4 +126,4 @@ def create_connector_files(connector_name, base_documentation_url, schema_object
         upload_object(zip_buffer, zip_file_key, {'CacheControl': 'no-store'})
         logger.info('source zip folder link :')
         logger.info(f"https://{bucket_name}.s3.amazonaws.com/{zip_file_key}")
-        logger.info(f"Created schema for connector : {base_documentation_url}")
+        logger.info(f"Created schema for connector : {connector['base_url']}")

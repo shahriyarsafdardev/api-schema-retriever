@@ -20,52 +20,41 @@ def convert_html_to_md(text):
     return converter.handle(text)
 
 
-def combine(connector_name):
-    file_content = read_object(AIRBYTE_CONNECTORS_FILE)
-    connectors = json.loads(file_content)
+def combine(connector):
+    page_count = connector.get('scraped_page_count', None)
+    if not page_count:
+        logger.info("No pages scrapped for {}".format(connector['name']))
+        return
 
-    for connector in connectors:
-        if connector['name'] != connector_name:
-            continue
+    logger.info("Creating md files for {}".format(connector['name']))
+    base_url = connector['base_url']
+    quoted_base_url = quote(base_url, safe="")
+    file_keys = list_objects([quoted_base_url, ".html"])
 
-        page_count = connector.get('scraped_page_count', None)
-        if not page_count:
-            logger.info("No pages scrapped for {}".format(connector['name']))
-            return
+    combined_file_content = ''
+    for file_key in file_keys:
+        logger.info("Generating .md file for {}".format(file_key))
+        file_content = convert_html_to_md(read_object(file_key))
+        upload_object(io.BytesIO(file_content.encode('utf-8')),
+                      file_key.rsplit('.html', 1)[0] + ".md")
+        combined_file_content += file_content + "\n\n"
 
-        logger.info("Creating md files for {}".format(connector['name']))
-        base_url = connector['base_url']
-        quoted_base_url = quote(base_url, safe="")
-        file_keys = list_objects([quoted_base_url, ".html"])
+    upload_object(io.BytesIO(combined_file_content.encode(
+        'utf-8')), quoted_base_url + '-bulk' + '.md')
 
-        combined_file_content = ''
-        for file_key in file_keys:
-            logger.info("Generating .md file for {}".format(file_key))
-            file_content = convert_html_to_md(read_object(file_key))
-            upload_object(io.BytesIO(file_content.encode('utf-8')),
-                          file_key.rsplit('.html', 1)[0] + ".md")
-            combined_file_content += file_content + "\n\n"
+    # this code splits the text to paragraphs then converts to ordereddict to ensure uniqueness and keep the correct order
+    paragraphs = combined_file_content.split("\n\n")
+    ordered_dict = OrderedDict.fromkeys(paragraphs)
+    unique_paragraphs = list(ordered_dict.keys())
+    upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode(
+        'utf-8')), quoted_base_url + '-bulk-concise' + '.md')
 
-        upload_object(io.BytesIO(combined_file_content.encode(
-            'utf-8')), quoted_base_url + '-bulk' + '.md')
+    logger.info(f"Extracting links for {connector['name']}")
+    extracted_links = smart_search_new_new(
+        detect_get, "\n\n".join(unique_paragraphs), connector)
 
-        # this code splits the text to paragraphs then converts to ordereddict to ensure uniqueness and keep the correct order
-        paragraphs = combined_file_content.split("\n\n")
-        ordered_dict = OrderedDict.fromkeys(paragraphs)
-        unique_paragraphs = list(ordered_dict.keys())
-        upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode(
-            'utf-8')), quoted_base_url + '-bulk-concise' + '.md')
+    extracted_links = list(set(extracted_links))
+    connector['endpoint_count'] = len(extracted_links)
+    connector['sphere_endpoints'] = extracted_links
 
-        logger.info(f"Extracting links for {connector['name']}")
-        extracted_links = smart_search_new_new(
-            detect_get, "\n\n".join(unique_paragraphs), connector)
-
-        extracted_links = list(set(extracted_links))
-        connector['endpoint_count'] = len(extracted_links)
-        connector['sphere_endpoints'] = extracted_links
-
-        updated_connectors = json.dumps(connectors, indent=4)
-        file_obj = io.BytesIO(updated_connectors.encode('utf-8'))
-        upload_object(file_obj, AIRBYTE_CONNECTORS_FILE,
-                      extraArgs={'CacheControl': 'no-store'})
-        break
+    return connector

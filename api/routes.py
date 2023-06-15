@@ -3,18 +3,18 @@ from fastapi import APIRouter, Request, BackgroundTasks
 from models.connector import page_count, recreate_connector, schema_count, zip_url
 from services.helpers.logger import getLogger
 from services.helpers.s3 import read_object
-from services.scrapers.domain_processor import PRODUCTION_CONNECTORS_FILE, combine_domain, embed_domain, generate_connector_files, scrape_pages
+from services.scrapers.domain_processor import PRODUCTION_CONNECTORS_FILE, add_connector_in_json_files, combine_domain, embed_domain, generate_connector_files, scrape_pages
 
 router = APIRouter()
 logger = getLogger()
 
 
-def process_domain_in_order(data):
+def process_domain_in_order(connector):
     # This function will be run in the background after sending the response.
-    scrape_pages(data['name'], data['page_url'], data['base_domain_url'])
-    combine_domain(data['name'])
-    embed_domain(data['name'])
-    generate_connector_files(data['name'], data['base_domain_url'])
+    scrape_pages(connector)
+    combine_domain(connector)
+    embed_domain(connector)
+    generate_connector_files(connector)
 
 
 @router.post('/create_connector')
@@ -22,12 +22,21 @@ async def create_connector(background_tasks: BackgroundTasks, request: Request):
     data = await request.json()
     production_file_content = read_object(PRODUCTION_CONNECTORS_FILE)
     production_connectors = json.loads(production_file_content)
-    if any((connector['name'].lower() == data['name'].lower() or connector['base_url'].lower() == data['base_domain_url'].lower()) for connector in production_connectors):
-        return {"success": f"Connector with name: {data['name']} already exists!"}
-    background_tasks.add_task(process_domain_in_order, data)
-    logger.info(f"Scraping started for the page: {data['page_url']}")
 
-    return {"success": f"Scraping started for: {data['page_url']}"}
+    if any((connector['name'].lower() == data['name'].lower() or connector['base_url'].lower() == data['base_url'].lower()) for connector in production_connectors):
+        return {"success": f"Connector with name: {data['name']} already exists!"}
+
+    connector = {
+        'name': data['name'],
+        'base_url': data['base_url'],
+        'start_url': data['start_url'],
+    }
+
+    add_connector_in_json_files(connector)
+    background_tasks.add_task(process_domain_in_order, connector)
+    logger.info(f"Scraping started for the page: {connector['start_url']}")
+
+    return {"success": f"Scraping started for: {connector['name']}"}
 
 
 @router.get('/connectors')
@@ -58,6 +67,7 @@ async def get_connectors():
 @router.post('/recreate_connector')
 async def connector_recreation(background_tasks: BackgroundTasks, request: Request):
     data = await request.json()
+
     try:
         background_tasks.add_task(recreate_connector, data)
         return {"status": "success", "message": "connector is being regenerated!"}

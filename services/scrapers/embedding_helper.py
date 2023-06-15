@@ -8,20 +8,6 @@ link_pattern = r'\s(https?|/[^/\s]+)'
 logger = getLogger()
 
 
-def create_context(texts):
-    context = ""
-    for text in texts:
-        remaining_space = 1000 - len(context)
-        if remaining_space == 0:
-            break
-        if len(text) > remaining_space:
-            context += text[:remaining_space]
-        else:
-            context += text
-
-    return context
-
-
 def link_search_text(text):
     pattern = re.compile(link_pattern)
 
@@ -35,14 +21,15 @@ def link_search_text(text):
 
 
 def text_slice_to_vector(text, base_url):
-    context = create_context(text)
+    context = text[:1000]
     embedding = create_embedding(context)
     metadata = {
         "text": context,
         "domain_base_url": base_url,
         "referenced_urls": detect_links(context)
     }
-    logger.info('Generating embedding for {} having length {}'.format(base_url, len(context)))
+    logger.info('Generating embedding for {} having length {}'.format(
+        base_url, len(context)))
     if len(text) > 1000:
         logger.info('Processing bigger chunk')
     return (
@@ -50,6 +37,7 @@ def text_slice_to_vector(text, base_url):
         embedding,
         metadata
     )
+
 
 def split_into_chunks(text, max_length=500):
     chunks = []

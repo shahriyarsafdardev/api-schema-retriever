@@ -14,49 +14,63 @@ AIRBYTE_CONNECTORS_FILE = 'airbyte_connectors.json'
 PRODUCTION_CONNECTORS_FILE = 'production_connectors.json'
 
 
-def add_connector_in_json_files(connector_name, page_url, base_domain_url, pages_count):
-    airbyte_file_content = read_object(AIRBYTE_CONNECTORS_FILE)
-    airbyte_connectors = json.loads(airbyte_file_content)
-    production_file_content = read_object(PRODUCTION_CONNECTORS_FILE)
-    production_connectors = json.loads(production_file_content)
-    connector = {
-        'name': connector_name,
-        'base_url': base_domain_url,
-        'start_url': page_url
-    }
-    production_connectors.append(connector)
-    connector.update({'scraped_page_count': pages_count})
+def read_all_connector(filename):
+    file_content = read_object(filename)
+    connectors = json.loads(file_content)
+    return connectors
+
+
+def upload_all_connector(filename, connectors):
+    upload_object(io.BytesIO(json.dumps(connectors, indent=4).encode(
+        'utf-8')), filename, {'CacheControl': 'no-store'})
+
+
+def add_connector_in_json_files(connector):
+    airbyte_connectors = read_all_connector(AIRBYTE_CONNECTORS_FILE)
+    production_connectors = read_all_connector(PRODUCTION_CONNECTORS_FILE)
+    production_connector_keys = ['name', 'base_url', 'start_url']
+    production_connector = {key: connector[key]
+                            for key in production_connector_keys}
+    production_connectors.append(production_connector)
     airbyte_connectors.append(connector)
-    upload_object(io.BytesIO(json.dumps(airbyte_connectors, indent=4).encode(
-            'utf-8')), AIRBYTE_CONNECTORS_FILE, {'CacheControl': 'no-store'})
-    upload_object(io.BytesIO(json.dumps(production_connectors, indent=4).encode(
-            'utf-8')), PRODUCTION_CONNECTORS_FILE, {'CacheControl': 'no-store'})
+    upload_all_connector(AIRBYTE_CONNECTORS_FILE, airbyte_connectors)
+    upload_all_connector(PRODUCTION_CONNECTORS_FILE, production_connectors)
 
 
-def scrape_pages(connector_name, page_url, base_domain_url):
+def update_connector_in_json_files(connector):
+    airbyte_connectors = read_all_connector(AIRBYTE_CONNECTORS_FILE)
+    updated_airbyte_connectors = [
+        connector if connector['base_url'] == airbyte_connector['base_url'] else airbyte_connector for airbyte_connector in airbyte_connectors]
+    upload_all_connector(AIRBYTE_CONNECTORS_FILE, updated_airbyte_connectors)
+
+
+def scrape_pages(connector):
     logger.info("Running scrape_domain...")
-    scraped_pages_count = len(scrape_domain(page_url, base_domain_url))
-    add_connector_in_json_files(connector_name, page_url, base_domain_url, scraped_pages_count)
+    scraped_pages_count = len(scrape_domain(
+        connector['start_url'], connector['base_url']))
+    connector.update({'scraped_page_count': scraped_pages_count})
+    update_connector_in_json_files(connector)
     time.sleep(5)  # Simulate time-consuming process
     logger.info("Finished scrape_domain")
 
 
-def combine_domain(connector_name):
+def combine_domain(connector):
     logger.info("Running combine...")
     time.sleep(5)  # Simulate time-consuming process
-    combine(connector_name)
+    updated_connector = combine(connector)
+    update_connector_in_json_files(updated_connector)
     logger.info("Finished combine")
 
 
-def embed_domain(connector_name):
+def embed_domain(connector):
     logger.info("Running embedding...")
-    embedding(connector_name)
+    embedding(connector)
     time.sleep(5)  # Simulate time-consuming process
     logger.info("Finished embedding")
 
 
-def generate_connector_files(connector_name, documentation_base_url):
-    create_connector_files(connector_name, documentation_base_url)
+def generate_connector_files(connector):
+    create_connector_files(connector)
     logger.info("Running generate_connector_files...")
     time.sleep(5)  # Simulate time-consuming process
     logger.info("Finished generate_connector_files")
