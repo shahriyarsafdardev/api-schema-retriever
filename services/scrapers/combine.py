@@ -1,15 +1,23 @@
 from collections import OrderedDict
 import io
 import json
+import html2text
 from logging import getLogger
 from pipes import quote
 from services.generators.smart_search import detect_get, smart_search_new_new
 from services.helpers.s3 import list_objects, read_object, upload_object
-from services.scrapers.batch_combine import convert_html_to_md
 
 
 logger = getLogger()
 AIRBYTE_CONNECTORS_FILE = 'airbyte_connectors.json'
+
+
+def convert_html_to_md(text):
+    converter = html2text.HTML2Text()
+    converter.ignore_links = True
+    converter.ignore_images = True
+    converter.body_width = 0
+    return converter.handle(text)
 
 
 def combine(connector_name):

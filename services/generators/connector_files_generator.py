@@ -4,10 +4,12 @@ import json
 import inflect
 import zipfile
 from collections import defaultdict
-from urllib.parse import quote, urlparse, urlunparse
+from urllib.parse import quote, urlparse
 from analysis.compare_authentication import get_langchain_response
 from services.helpers.logger import getLogger
-from services.helpers.s3 import delete_folder, read_object, upload_object, delete_object, bucket_name
+from services.helpers.pinecone_db import delete_vectors
+from services.helpers.s3 import delete_connector_zip_file, delete_folder, read_object, upload_object, bucket_name
+from services.scrapers.embedding import embedding
 
 logger = getLogger()
 
@@ -30,35 +32,17 @@ def slugify(s):
     return s
 
 
-def create_empty_files_on_s3(connector_name):
-    folder_name = f"source-{slugify(connector_name)}"
-    zip_file_key = f"{folder_name}.zip"
-    zip_buffer = io.BytesIO()
-
-    upload_object(io.BytesIO(b''),
-                  f"{folder_name}/schemas/", {'CacheControl': 'no-store'})
-
-    with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_DEFLATED) as archive:
-        pass
-
-    zip_buffer.seek(0)
-    upload_object(zip_buffer, zip_file_key, {'CacheControl': 'no-store'})
-
-
-async def remove_connector_data(connector_name, base_documentation_url):
+def remove_connector_data(connector_name, base_documentation_url):
     logger.info(f"Removing data for connector : {base_documentation_url}")
     s3_folder_name = f"source-{slugify(connector_name)}"
+    file_name = f"source-{slugify(connector_name)}.zip"
     # Delete existing s3 files for the domain
     delete_folder(s3_folder_name)
-    connectors = json.loads(read_object("airbyte_connectors.json"))
-    for connector in connectors:
-        if connector['name'] == connector_name and 'zip_url' in connector:
-            connector['zip_url'] = None
-            logger.info(f"Updated the connector {connector_name} zip_url")
-            break
-    upload_object(io.BytesIO(json.dumps(connectors, indent=4).encode(
-        'utf-8')), f"airbyte_connectors.json", {'CacheControl': 'no-store'})
-    logger.info(f"Removed data for connector : {base_documentation_url}")
+    # Delete existing vectors for the domain
+    delete_vectors({'domain_base_url': base_documentation_url})
+    # Delete existing zip url for the domain
+    delete_connector_zip_file(file_name)
+    logger.info(f"Removed data for connector : {base_documentation_url} \n")
 
 
 def slugify(s):
@@ -182,4 +166,7 @@ def create_connector_files(connector_name, base_documentation_url, schema_object
 
 async def recreate_connector(connector_name, connector_base_url):
     await remove_connector_data(connector_name, connector_base_url)
+    logger.info(f"\nStart generating embeddings for connector : {connector_base_url}")
+    embedding(connector_name)
+    logger.info(f"\nGenerated embeddings for connector : {connector_base_url}")
     await create_connector_files(connector_name, connector_base_url)

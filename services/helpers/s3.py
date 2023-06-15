@@ -120,3 +120,16 @@ def get_connector_zip_file(file_name):
     except Exception as e:
         logger.error(f"An error occurred while checking for the zip file: {e}")
         return None
+
+
+def delete_connector_zip_file(file_name):
+    try:
+        objects = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=file_name)
+        for obj in objects.get('Contents', []):
+            if obj['Key'] == file_name:
+                s3_client.delete_object(Bucket=bucket_name, Key=file_name)
+                logger.info(f"Zip file {file_name} deleted successfully from bucket: {bucket_name}")
+                return
+        logger.info(f"Zip file {file_name} does not exist in S3 bucket {bucket_name}")
+    except Exception as e:
+        logger.error(f"An error occurred while checking for the zip file: {e}")

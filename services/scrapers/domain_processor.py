@@ -3,12 +3,10 @@ from services.generators.connector_files_generator import create_connector_files
 from services.helpers.s3 import read_object, upload_object
 from services.helpers.logger import getLogger
 import json
-import html2text
 import io
 from services.scrapers.scraper import scrape_domain
 from services.scrapers.combine import combine
 from services.scrapers.embedding import embedding
-from services.scrapers.scraper import scrape_domain
 
 
 logger = getLogger()
@@ -62,11 +60,3 @@ def generate_connector_files(connector_name, documentation_base_url):
     logger.info("Running generate_connector_files...")
     time.sleep(5)  # Simulate time-consuming process
     logger.info("Finished generate_connector_files")
-
-
-def convert_html_to_md(text):
-    converter = html2text.HTML2Text()
-    converter.ignore_links = True
-    converter.ignore_images = True
-    converter.body_width = 0
-    return converter.handle(text)

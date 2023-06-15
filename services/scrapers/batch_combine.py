@@ -4,7 +4,7 @@ from services.helpers.logger import getLogger
 import json
 import html2text
 import io
-from services.scrapers.domain_processor import convert_html_to_md
+from services.scrapers.combine import convert_html_to_md
 from services.scrapers.link_matcher import detect_links
 from termcolor import colored
 from collections import OrderedDict
