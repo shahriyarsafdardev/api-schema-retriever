@@ -8,11 +8,10 @@ import json
 import html2text
 import re
 import io
-from services.scrapers.link_matcher import detect_links
 from services.scrapers.scraper import scrape_domain
-from termcolor import colored
 from collections import OrderedDict
 from services.scrapers.embedding_helper import split_into_chunks, text_slice_to_vector
+from services.generators.smart_search import smart_search_new_new, detect_get
 
 
 logger = getLogger()
@@ -107,17 +106,8 @@ def unit_combine(connector_name):
         unique_paragraphs = list(ordered_dict.keys())
         upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode('utf-8')), quoted_base_url + '-bulk-concise' + '.md')
 
-        extracted_links = []
-        for paragraph in unique_paragraphs:
-            links = detect_links(paragraph)
-            extracted_links.extend(links)
-
-            for link in links:
-                context_start = max(0, paragraph.find(link) - 150)
-                context_end = min(len(paragraph), paragraph.find(link) + len(link) + 150)
-                logger.info(colored(paragraph[context_start:paragraph.find(link)], 'blue') +
-                            colored(link, 'red') +
-                            colored(paragraph[paragraph.find(link)+len(link):context_end], 'blue'))
+        logger.info(f"Extracting links for {connector['name']}")
+        extracted_links = smart_search_new_new(detect_get, "\n\n".join(unique_paragraphs), connector)
 
         extracted_links = list(set(extracted_links))
         connector['endpoint_count'] = len(extracted_links)
