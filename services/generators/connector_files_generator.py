@@ -12,8 +12,6 @@ from services.helpers.s3 import delete_connector_zip_file, delete_folder, read_o
 from services.scrapers.embedding import embedding
 
 logger = getLogger()
-
-
 p = inflect.engine()
 
 prompt_examples = """
@@ -22,14 +20,6 @@ Description: This endpoint returns ..........
 Type: corresponding restful api method
 Returned Object: a single word representing the object being returned by this endpoint
 """
-
-
-def slugify(s):
-    s = s.lower()
-    s = re.sub(r'[^a-z0-9 -]', '', s)
-    s = re.sub(r'\s+', '-', s)
-    s = s.strip()
-    return s
 
 
 def remove_connector_data(connector_name, base_documentation_url):

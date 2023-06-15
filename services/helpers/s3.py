@@ -24,14 +24,6 @@ s3_client = boto3.client(
 bucket_name = settings.sphere_aws_s3_bucket_name
 
 
-def slugify(s):
-    s = s.lower()
-    s = re.sub(r'[^a-z0-9 -]', '', s)
-    s = re.sub(r'\s+', '-', s)
-    s = s.strip()
-    return s
-
-
 def upload_object(file, key, extraArgs={}, verbose=False):
     try:
         s3_client.upload_fileobj(file, bucket_name, key, ExtraArgs=extraArgs)

@@ -44,7 +44,7 @@ def combine(connector_name):
             file_content = convert_html_to_md(read_object(file_key))
             upload_object(io.BytesIO(file_content.encode('utf-8')),
                           file_key.rsplit('.html', 1)[0] + ".md")
-            combined_file_content += file_content + "\n"
+            combined_file_content += file_content + "\n\n"
 
         upload_object(io.BytesIO(combined_file_content.encode(
             'utf-8')), quoted_base_url + '-bulk' + '.md')
