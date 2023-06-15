@@ -24,12 +24,12 @@ async def create_connector(background_tasks: BackgroundTasks, request: Request):
     production_file_content = read_object(PRODUCTION_CONNECTORS_FILE)
     production_connectors = json.loads(production_file_content)
     for connector in production_connectors:
-        if connector['name'] == data['name']:
-            return { "success": f"Connector with name: {data['name']} already exists!" }
+        if connector['name'].lower() == data['name'].lower() or connector['base_url'].lower() == data['base_domain_url'].lower():
+            return {"success": f"Connector with name: {data['name']} already exists!"}
     background_tasks.add_task(process_domain_in_order, data)
     logger.info(f"Scraping started for the page: {data['page_url']}")
 
-    return { "success": f"Scraping started for: {data['page_url']}" }
+    return {"success": f"Scraping started for: {data['page_url']}"}
 
 
 @router.get('/connectors')
@@ -52,16 +52,16 @@ async def get_connectors():
             }
             modified_connectors.append(modified_connector)
 
-        return { 'connectors': modified_connectors }
+        return {'connectors': modified_connectors}
     except Exception as e:
-        return { "status": "error", "message": "something went wrong!" }
+        return {"status": "error", "message": "something went wrong!"}
 
 
 @router.post('/recreate_connector')
-async def connector_recreation(background_tasks: BackgroundTasks,request: Request):
+async def connector_recreation(background_tasks: BackgroundTasks, request: Request):
     data = await request.json()
     try:
         background_tasks.add_task(recreate_connector, data)
-        return { "status": "success", "message": "connector is being regenerated!" }
+        return {"status": "success", "message": "connector is being regenerated!"}
     except Exception as e:
-        return { "status": "error", "message": "something went wrong!" }
+        return {"status": "error", "message": "something went wrong!"}
