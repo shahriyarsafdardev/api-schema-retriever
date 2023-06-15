@@ -58,10 +58,10 @@ async def get_connectors():
 
 
 @router.post('/recreate_connector')
-async def connector_recreation(request: Request):
+async def connector_recreation(background_tasks: BackgroundTasks,request: Request):
     data = await request.json()
     try:
-        recreate_connector(data['name'], data['base_documentation_url'])
+        background_tasks.add_task(recreate_connector, data)
         return { "status": "success", "message": "connector is being regenerated!" }
     except Exception as e:
         return { "status": "error", "message": "something went wrong!" }

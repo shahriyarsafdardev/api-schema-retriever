@@ -1,9 +1,9 @@
 from collections import OrderedDict
 import io
 import json
+from urllib.parse import quote
 import html2text
 from logging import getLogger
-from urllib.parse import quote
 from services.generators.smart_search import detect_get, smart_search_new_new
 from services.helpers.s3 import list_objects, read_object, upload_object
 
@@ -42,19 +42,23 @@ def combine(connector_name):
         for file_key in file_keys:
             logger.info("Generating .md file for {}".format(file_key))
             file_content = convert_html_to_md(read_object(file_key))
-            upload_object(io.BytesIO(file_content.encode('utf-8')), file_key.rsplit('.html', 1)[0] + ".md")
+            upload_object(io.BytesIO(file_content.encode('utf-8')),
+                          file_key.rsplit('.html', 1)[0] + ".md")
             combined_file_content += file_content + "\n"
 
-        upload_object(io.BytesIO(combined_file_content.encode('utf-8')), quoted_base_url + '-bulk' + '.md')
+        upload_object(io.BytesIO(combined_file_content.encode(
+            'utf-8')), quoted_base_url + '-bulk' + '.md')
 
         # this code splits the text to paragraphs then converts to ordereddict to ensure uniqueness and keep the correct order
         paragraphs = combined_file_content.split("\n\n")
         ordered_dict = OrderedDict.fromkeys(paragraphs)
         unique_paragraphs = list(ordered_dict.keys())
-        upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode('utf-8')), quoted_base_url + '-bulk-concise' + '.md')
+        upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode(
+            'utf-8')), quoted_base_url + '-bulk-concise' + '.md')
 
         logger.info(f"Extracting links for {connector['name']}")
-        extracted_links = smart_search_new_new(detect_get, "\n\n".join(unique_paragraphs), connector)
+        extracted_links = smart_search_new_new(
+            detect_get, "\n\n".join(unique_paragraphs), connector)
 
         extracted_links = list(set(extracted_links))
         connector['endpoint_count'] = len(extracted_links)
@@ -62,5 +66,6 @@ def combine(connector_name):
 
         updated_connectors = json.dumps(connectors, indent=4)
         file_obj = io.BytesIO(updated_connectors.encode('utf-8'))
-        upload_object(file_obj, AIRBYTE_CONNECTORS_FILE, extraArgs={'CacheControl': 'no-store'})
+        upload_object(file_obj, AIRBYTE_CONNECTORS_FILE,
+                      extraArgs={'CacheControl': 'no-store'})
         break

@@ -68,7 +68,7 @@ def string_to_dict(s):
 
 def generate_schemas_with_state(base_documentation_url, endpoint):
     endpoint_details = string_to_dict(get_langchain_response(base_documentation_url,
-     f"""Describe the {endpoint} endpoint in a format that matches the following examples: {prompt_examples}.
+                                                             f"""Describe the {endpoint} endpoint in a format that matches the following examples: {prompt_examples}.
         Note that the "Returned Object" should always be plural, lowercase with underscores instead of spaces."""))
 
     if endpoint_details is not None and \
@@ -133,10 +133,11 @@ def create_connector_files(connector_name, base_documentation_url, schema_object
         # read and upload concise bulk file
         quoted_base_url = quote(base_documentation_url, safe="")
         bulk_concise_file = read_object(f"{quoted_base_url}-bulk-concise.md")
-        upload_object(io.BytesIO(bulk_concise_file.encode('utf-8')), f"{folder_name}/{quoted_base_url}-bulk-concise.md")
+        upload_object(io.BytesIO(bulk_concise_file.encode('utf-8')),
+                      f"{folder_name}/{quoted_base_url}-bulk-concise.md")
         with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_DEFLATED) as archive:
-                archive.writestr(
-                    f"{folder_name}/{quoted_base_url}-bulk-concise.md", bulk_concise_file)
+            archive.writestr(
+                f"{folder_name}/{quoted_base_url}-bulk-concise.md", bulk_concise_file)
 
         for object_name, schema in schema_objects.items():
             formatted_schema = json.dumps(schema, indent=4)
@@ -150,23 +151,16 @@ def create_connector_files(connector_name, base_documentation_url, schema_object
         upload_object(zip_buffer, zip_file_key, {'CacheControl': 'no-store'})
         logger.info('source zip folder link :')
         logger.info(f"https://{bucket_name}.s3.amazonaws.com/{zip_file_key}")
-
-        connectors = json.loads(read_object("airbyte_connectors.json"))
-        for connector in connectors:
-            if connector['name'] == connector_name:
-                connector['zip_url'] = f"https://{bucket_name}.s3.amazonaws.com/{zip_file_key}"
-                logger.info(f"Updated connector:")
-                logger.info(f"{connector}")
-                break
-
-        upload_object(io.BytesIO(json.dumps(connectors, indent=4).encode(
-            'utf-8')), f"airbyte_connectors.json", {'CacheControl': 'no-store'})
         logger.info(f"Created schema for connector : {base_documentation_url}")
 
 
-async def recreate_connector(connector_name, connector_base_url):
-    await remove_connector_data(connector_name, connector_base_url)
-    logger.info(f"\nStart generating embeddings for connector : {connector_base_url}")
-    embedding(connector_name)
-    logger.info(f"\nGenerated embeddings for connector : {connector_base_url}")
-    await create_connector_files(connector_name, connector_base_url)
+def recreate_connector(connector):
+    remove_connector_data(
+        connector['name'], connector['base_documentation_url'])
+    logger.info(
+        f"\nStart generating embeddings for connector : {connector['base_documentation_url']}")
+    embedding(connector['name'])
+    logger.info(
+        f"\nGenerated embeddings for connector : {connector['base_documentation_url']}")
+    create_connector_files(
+        connector['name'], connector['base_documentation_url'])
