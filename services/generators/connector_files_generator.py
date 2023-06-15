@@ -110,7 +110,7 @@ def create_connector_files(connector_name, base_documentation_url, schema_object
         bulk_concise_file = read_object(f"{quoted_base_url}-bulk-concise.md")
         upload_object(io.BytesIO(bulk_concise_file.encode('utf-8')),
                       f"{folder_name}/{quoted_base_url}-bulk-concise.md")
-        with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_DEFLATED) as archive:
+        with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_STORED) as archive:
             archive.writestr(
                 f"{folder_name}/{quoted_base_url}-bulk-concise.md", bulk_concise_file)
 
@@ -118,7 +118,7 @@ def create_connector_files(connector_name, base_documentation_url, schema_object
             formatted_schema = json.dumps(schema, indent=4)
             upload_object(io.BytesIO(formatted_schema.encode(
                 'utf-8')), f"{folder_name}/schemas/{object_name}.json", {'CacheControl': 'no-store'})
-            with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_DEFLATED) as archive:
+            with zipfile.ZipFile(zip_buffer, mode='a', compression=zipfile.ZIP_STORED) as archive:
                 archive.writestr(
                     f"{folder_name}/schemas/{object_name}.json", formatted_schema)
 
