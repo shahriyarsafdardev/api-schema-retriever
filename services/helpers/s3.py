@@ -118,3 +118,13 @@ def delete_connector_zip_file(file_name):
             f"Zip file {file_name} does not exist in S3 bucket {bucket_name}")
     except Exception as e:
         logger.error(f"An error occurred while checking for the zip file: {e}")
+
+
+def create_empty_directory(dir_name):
+    # Upload an empty object to create the folder
+    response = s3_client.put_object(Bucket=bucket_name, Key=dir_name)
+
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return True
+
+    return False

@@ -5,6 +5,7 @@ from services.helpers.logger import getLogger
 from services.scrapers.scraper import scrape_domain
 from services.scrapers.combine import combine
 from services.scrapers.embedding import embed
+from services.scrapers.link_extraction import extract_endpoints
 
 
 logger = getLogger()
@@ -47,6 +48,14 @@ def combine_domain(connector):
     updated_connector = combine(connector)
     save_connector_in_json_files(updated_connector)
     logger.info("Finished combine")
+
+
+def extract_links(connector):
+    logger.info("Running endpoints extraction...")
+    time.sleep(5)  # Simulate time-consuming process
+    updated_connector = extract_endpoints(connector)
+    save_connector_in_json_files(updated_connector)
+    logger.info("Finished endpoints extraction")
 
 
 def embed_domain(connector):

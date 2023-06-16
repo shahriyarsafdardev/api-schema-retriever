@@ -4,6 +4,7 @@ import json
 from urllib.parse import quote
 import html2text
 from logging import getLogger
+from services.generators.connector_files_generator import slugify
 from services.generators.smart_search import detect_get, smart_search_new_new
 from services.helpers.s3 import list_objects, read_object, upload_object
 
@@ -36,25 +37,27 @@ def combine(connector):
         logger.info("Generating .md file for {}".format(file_key))
         file_content = convert_html_to_md(read_object(file_key))
         upload_object(io.BytesIO(file_content.encode('utf-8')),
-                      file_key.rsplit('.html', 1)[0] + ".md")
+                      file_key.rsplit('.html', 1)[0] + ".md", {
+            'CacheControl': 'no-store'})
         combined_file_content += file_content + "\n\n"
 
     upload_object(io.BytesIO(combined_file_content.encode(
-        'utf-8')), quoted_base_url + '-bulk' + '.md')
+        'utf-8')), quoted_base_url + '-bulk' + '.md', {
+        'CacheControl': 'no-store'})
 
     # this code splits the text to paragraphs then converts to ordereddict to ensure uniqueness and keep the correct order
     paragraphs = combined_file_content.split("\n\n")
     ordered_dict = OrderedDict.fromkeys(paragraphs)
     unique_paragraphs = list(ordered_dict.keys())
     upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode(
-        'utf-8')), quoted_base_url + '-bulk-concise' + '.md')
+        'utf-8')), quoted_base_url + '-bulk-concise' + '.md', {
+        'CacheControl': 'no-store'})
 
-    logger.info(f"Extracting links for {connector['name']}")
-    extracted_links = smart_search_new_new(
-        detect_get, "\n\n".join(unique_paragraphs), connector)
-
-    extracted_links = list(set(extracted_links))
-    connector['endpoint_count'] = len(extracted_links)
-    connector['sphere_endpoints'] = extracted_links
+    # this will add a new documentation.txt file in connector's directory
+    folder_name = f"source-{slugify(connector['name'])}"
+    upload_object(io.BytesIO("\n\n".join(unique_paragraphs).encode(
+        'utf-8')), f"{folder_name}/documentation.txt", {
+        'CacheControl': 'no-store'})
+    logger.info("Uploaded documentation file for {}".format(connector['name']))
 
     return connector
