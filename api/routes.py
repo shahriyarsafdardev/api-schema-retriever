@@ -5,7 +5,7 @@ from models.connector import page_count, recreate_connector, schema_count, zip_u
 from services.helpers.logger import getLogger
 from services.helpers.s3 import read_object
 from services.scrapers.domain_processor import PRODUCTION_CONNECTORS_FILE, add_connector_in_json_files, combine_domain, embed_domain, generate_connector_files, scrape_pages
-import datetime
+from datetime import datetime
 
 router = APIRouter()
 logger = getLogger()
@@ -28,13 +28,11 @@ async def create_connector(background_tasks: BackgroundTasks, request: Request):
     if any((connector['name'].lower() == data['name'].lower() or connector['base_url'].lower() == data['base_url'].lower()) for connector in production_connectors):
         return {"success": f"Connector with name: {data['name']} already exists!"}
 
-    current_time = datetime.datetime.now()
-    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
     connector = {
         'name': data['name'],
         'base_url': data['base_url'],
         'start_url': data['start_url'],
-        'created_at': formatted_time
+        'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
 
     add_connector_in_json_files(connector)
@@ -50,18 +48,21 @@ async def get_connectors():
         file_content = read_object('production_connectors.json')
         connectors = json.loads(file_content)
         modified_connectors = []
-        sorted_connectors = sorted(connectors, key=operator.itemgetter('created_at'), reverse=True)
+
+        sorted_connectors = sorted(
+            connectors,
+            key=lambda connector: datetime.strptime(
+                connector['created_at'], "%Y-%m-%d %H:%M:%S"),
+            reverse=True)
+
         for connector in sorted_connectors:
             connector_zip_url = zip_url(connector['name'])
             scraped_pages_count = page_count(connector['base_url'])
-            schema_files_count = schema_count(connector['name'])
             modified_connector = {
                 'name': connector['name'],
                 'export_url': connector_zip_url,
                 'pages_indexed': scraped_pages_count,
-                'schemas_indexed': schema_files_count,
                 'base_url': connector['base_url'],
-                'created_at': connector['created_at']
             }
             modified_connectors.append(modified_connector)
 
