@@ -87,24 +87,6 @@ def list_objects(file_name_filters=[], verbose=False):
     return keys
 
 
-def count_connector_schema_files(connector_name):
-    try:
-        paginator = s3_client.get_paginator('list_objects_v2')
-        page_iterator = paginator.paginate(
-            Bucket=bucket_name, Prefix=f"source-{connector_name}/schemas/")
-
-        file_count = 0
-        for page in page_iterator:
-            file_count += len([obj for obj in page.get('Contents',
-                                                       []) if not obj['Key'].endswith('/')])
-
-        logger.info(f"Counted {file_count} schema files for {connector_name}")
-        return file_count
-    except Exception as e:
-        logger.error(f"An error occurred while counting the files: {e}")
-        return 0
-
-
 def get_connector_zip_file(file_name):
     try:
         objects = s3_client.list_objects_v2(

@@ -1,4 +1,3 @@
-import json
 from logging import getLogger
 from urllib.parse import quote
 from services.helpers.pinecone_db import store_chunks
@@ -10,7 +9,7 @@ logger = getLogger()
 AIRBYTE_CONNECTORS_FILE = 'airbyte_connectors.json'
 
 
-def embedding(connector):
+def embed(connector):
     quoted_base_url = quote(connector['base_url'], safe="")
     concise_bulk_file = read_object(
         quoted_base_url + '-bulk-concise' + '.md')

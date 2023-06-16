@@ -8,18 +8,6 @@ link_pattern = r'\s(https?|/[^/\s]+)'
 logger = getLogger()
 
 
-def link_search_text(text):
-    pattern = re.compile(link_pattern)
-
-    links = []
-    for match in pattern.finditer(text):
-        links.append(match.group())
-
-    logger.info(f"links to add as reference: {links}")
-
-    return list(set(links))
-
-
 def text_slice_to_vector(text, base_url):
     context = text[:1000]
     embedding = create_embedding(context)

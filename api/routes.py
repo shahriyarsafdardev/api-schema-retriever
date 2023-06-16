@@ -1,7 +1,6 @@
 import json
-import operator
 from fastapi import APIRouter, Request, BackgroundTasks
-from models.connector import page_count, recreate_connector, schema_count, zip_url
+from models.connector import page_count, recreate_connector, zip_url
 from services.helpers.logger import getLogger
 from services.helpers.s3 import read_object
 from services.scrapers.domain_processor import PRODUCTION_CONNECTORS_FILE, add_connector_in_json_files, combine_domain, embed_domain, generate_connector_files, scrape_pages
@@ -12,7 +11,6 @@ logger = getLogger()
 
 
 def process_domain_in_order(connector):
-    # This function will be run in the background after sending the response.
     scrape_pages(connector)
     combine_domain(connector)
     embed_domain(connector)

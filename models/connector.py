@@ -4,8 +4,8 @@ from logging import getLogger
 from urllib.parse import quote
 from services.generators.connector_files_generator import create_connector_files, slugify
 from services.helpers.pinecone_db import delete_vectors
-from services.helpers.s3 import bucket_name, count_connector_schema_files, delete_connector_zip_file, delete_folder, get_connector_zip_file, list_objects, read_object, upload_object
-from services.scrapers.embedding import embedding
+from services.helpers.s3 import bucket_name, delete_connector_zip_file, delete_folder, get_connector_zip_file, list_objects, read_object, upload_object
+from services.scrapers.embedding import embed
 
 
 logger = getLogger()
@@ -15,12 +15,6 @@ def zip_url(name):
     file_name = f"source-{slugify(name)}.zip"
     zip_url = get_connector_zip_file(file_name)
     return zip_url
-
-
-def schema_count(name):
-    slugified_name = slugify(name)
-    schema_count = count_connector_schema_files(slugified_name)
-    return schema_count
 
 
 def page_count(base_url):
@@ -64,7 +58,7 @@ def recreate_connector(connector):
         connector['name'], connector['base_url'])
     logger.info(
         f"\nStart generating embeddings for connector : {connector['base_url']}")
-    embedding(connector)
+    embed(connector)
     logger.info(
         f"\nGenerated embeddings for connector : {connector['base_url']}")
     create_connector_files(connector)

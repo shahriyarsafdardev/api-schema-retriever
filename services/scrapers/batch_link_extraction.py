@@ -30,7 +30,8 @@ def extract_links(filename, local=False):
         connector['endpoint_count'] = len(extracted_links)
         connector['sphere_endpoints'] = extracted_links
 
-        logger.info(f"Extracted {connector['endpoint_count']} links for {connector['name']}")
+        logger.info(
+            f"Extracted {connector['endpoint_count']} links for {connector['name']}")
 
         if local:
             with open(filename, 'w') as f:
