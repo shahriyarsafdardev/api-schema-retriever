@@ -28,7 +28,7 @@ def upload_all_connector(filename, connectors):
 def add_connector_in_json_files(connector):
     airbyte_connectors = read_all_connector(AIRBYTE_CONNECTORS_FILE)
     production_connectors = read_all_connector(PRODUCTION_CONNECTORS_FILE)
-    production_connector_keys = ['name', 'base_url', 'start_url']
+    production_connector_keys = ['name', 'base_url', 'start_url', 'created_at']
     production_connector = {key: connector[key]
                             for key in production_connector_keys}
     production_connectors.append(production_connector)
