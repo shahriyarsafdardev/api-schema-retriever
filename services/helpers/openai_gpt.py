@@ -18,6 +18,7 @@ def create_embedding(text, max_retries=5):
             time.sleep(2 ** i)
     return []
 
+
 def context_based_completion(context, query, model="gpt-3.5-turbo", verbose=False, max_retries=5):
     for attempt in range(max_retries):
         try:
@@ -37,6 +38,7 @@ def context_based_completion(context, query, model="gpt-3.5-turbo", verbose=Fals
             time.sleep(wait_time)
 
     raise Exception(f"Maximum number of retries ({max_retries}) exceeded.")
+
 
 def completion(query, model="gpt-4", max_retries=5):
     for attempt in range(max_retries):

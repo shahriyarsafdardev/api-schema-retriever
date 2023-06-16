@@ -1,21 +1,22 @@
 import re
 
+
 def detect_links(text):
     # Step 1
     pattern_1 = re.compile(r'<[^>]{0,28}>|{[^}]{0,15}}')
     for match in re.finditer(pattern_1, text):
         if (len(match.group()) <= 30 and '<' in match.group()) or (len(match.group()) <= 17 and '{' in match.group()):
             text = text.replace(match.group(), match.group().replace(" ", "_"))
-        
+
     # Step 2
     # pattern_2 = r"(?<=[\s\"'(\[`])(?:http|\/)[^\s\"'\)\]`]+"
-    
+
     # This pattern matches links that have no character or a space before them
     # pattern_2 = r"(?:(?<=\s)|(?<=^))(?:http|\/)[^\s\"'\)\]`]+"
-    
+
     # This pattern matches links that have no character or any character before them
     pattern_2 = r"(?:(?<=.)|(?<=^))(?:http|\/)[^\s\"'\)\]`]+"
-    
+
     links = re.findall(pattern_2, text)
 
     # Step 3
@@ -33,6 +34,7 @@ def detect_links(text):
         return True
 
     return [link for link in links if is_valid_url(link)]
+
 
 if __name__ == "__main__":
     example_input = """

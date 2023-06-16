@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from services.helpers.s3 import read_object, list_objects
-from services.helpers.json_loader import load_json
+from services.helpers.json_loader import load_connectors
 from urllib.parse import quote
 import re
 
@@ -9,7 +9,7 @@ def get_headers(content):
     matches = regex_matcher.findall(content) 
     return matches 
 
-connectors = load_json('data/airbyte_connectors.json', local=True)
+connectors = load_connectors('data/airbyte_connectors.json', local=True)
 
 # Create a dictionary to store each connector and the total number of characters in its .md files
 connector_character_counts = {}

@@ -27,21 +27,22 @@ def run_scrapers(filename, local=False):
     for idx, connector in enumerate(connectors):
         # Check if this connector has already been scraped
         # if "scraped_page_count" in connector:
-            # logger.info(f'Skipping {connector["name"]}, already scraped {connector["scraped_page_count"]} pages.')
-            # continue
+        # logger.info(f'Skipping {connector["name"]}, already scraped {connector["scraped_page_count"]} pages.')
+        # continue
 
         if connector["scraped_page_count"] != 11:
             # logger.info(f'Skipping {connector["name"]}, already scraped {connector["scraped_page_count"]} pages.')
             continue
-        
+
         name = connector['name']
         base_url = connector['base_url']
         start_url = connector['start_url']
-        
+
         scraped_urls = scrape_domain(start_url, base_url, verbose=False)
 
         # Log the number of URLs scraped for each connector
-        logger.info(f'Scraper for {name} completed. Total URLs scraped: {len(scraped_urls)}')
+        logger.info(
+            f'Scraper for {name} completed. Total URLs scraped: {len(scraped_urls)}')
 
         # Update the connector dictionary with the count of scraped pages
         connector['scraped_page_count'] = len(scraped_urls)
@@ -55,9 +56,9 @@ def run_scrapers(filename, local=False):
             # Saving file to S3
             updated_connectors = json.dumps(connectors, indent=4)
             file_obj = io.BytesIO(updated_connectors.encode('utf-8'))
-            upload_object(file_obj, filename, extraArgs={'CacheControl': 'no-store'})
-        
-        
+            upload_object(file_obj, filename, extraArgs={
+                          'CacheControl': 'no-store'})
+
 
 # Usage:
 run_scrapers('airbyte_connectors.json', local=True)

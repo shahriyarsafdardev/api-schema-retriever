@@ -4,7 +4,7 @@ from services.helpers.logger import getLogger
 
 logger = getLogger()
 
-pinecone.init(api_key=settings.pinecone_api_key,    
+pinecone.init(api_key=settings.pinecone_api_key,
               environment=settings.pinecone_env)
 index = pinecone.Index(settings.pinecone_index_name)
 

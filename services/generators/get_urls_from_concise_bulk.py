@@ -1,3 +1,5 @@
+import yaml
+import requests
 from urllib.parse import quote
 from services.helpers.s3 import read_object, upload_object
 import json
@@ -7,10 +9,6 @@ import io
 
 link_pattern = r'\s(https?://[^\s]+|/[^\s]+)'
 logger = getLogger()
-
-
-import requests
-import yaml
 
 
 def get_paths_and_url_base_from_yaml(yaml_data):
@@ -84,48 +82,54 @@ def find_manifest_file(connector_name):
 
 
 def extract_urls_from_concise_bulk(filename):
-	# read the contents of the connectors file
-	file_content = read_object(filename)
-	connectors = json.loads(file_content)
+    # read the contents of the connectors file
+    file_content = read_object(filename)
+    connectors = json.loads(file_content)
 
-	upload_object('Comparison between Airbyte connector endpoints and our concise file endpoints\n\n', 'airbyte_connectors_comparison.txt')
+    upload_object('Comparison between Airbyte connector endpoints and our concise file endpoints\n\n',
+                  'airbyte_connectors_comparison.txt')
 
-	for connector in connectors:
-		airbyte_status =  connector.get('airbyte_status', None)
-		if airbyte_status == 'lowcode-connector':
-			logger.info(f"Comparing {connector['name']}")
+    for connector in connectors:
+        airbyte_status = connector.get('airbyte_status', None)
+        if airbyte_status == 'lowcode-connector':
+            logger.info(f"Comparing {connector['name']}")
 
-			# get the existing comparion list so we can append to it
-			comparison_list = read_object('airbyte_connectors_comparison.txt')
-			
-			# if this is an airbyte low code connector, extract urls from concise bulk file
-			quoted_base_url = quote(connector['base_url'], safe="")
-			concise_bulk_file = read_object(f"{quoted_base_url}-bulk-concise.md")
+            # get the existing comparion list so we can append to it
+            comparison_list = read_object('airbyte_connectors_comparison.txt')
 
-			# find all urls from concise file and airbyte connector manifest then remove api base url and leading / 
-			airbyte_connector_urls, api_base_url = find_manifest_file(connector['name'])
+            # if this is an airbyte low code connector, extract urls from concise bulk file
+            quoted_base_url = quote(connector['base_url'], safe="")
+            concise_bulk_file = read_object(
+                f"{quoted_base_url}-bulk-concise.md")
 
-			# if no data found from Airbyte, move onto next connector
-			if not airbyte_connector_urls or not api_base_url:
-				logger.info(f"No Airbyte endpoints found for {connector['name']}")
-				continue
+            # find all urls from concise file and airbyte connector manifest then remove api base url and leading /
+            airbyte_connector_urls, api_base_url = find_manifest_file(
+                connector['name'])
 
+            # if no data found from Airbyte, move onto next connector
+            if not airbyte_connector_urls or not api_base_url:
+                logger.info(
+                    f"No Airbyte endpoints found for {connector['name']}")
+                continue
 
-			airbyte_connector_urls = [url.replace(api_base_url, '').lstrip('/') for url in airbyte_connector_urls]
-			concise_file_urls = re.findall(link_pattern, concise_bulk_file)
-			concise_file_urls = [url.replace(api_base_url, '').lstrip('/') for url in concise_file_urls]
+            airbyte_connector_urls = [url.replace(api_base_url, '').lstrip(
+                '/') for url in airbyte_connector_urls]
+            concise_file_urls = re.findall(link_pattern, concise_bulk_file)
+            concise_file_urls = [url.replace(api_base_url, '').lstrip(
+                '/') for url in concise_file_urls]
 
-			# urls that exist in both
-			common_urls = set(concise_file_urls) & set(airbyte_connector_urls)
+            # urls that exist in both
+            common_urls = set(concise_file_urls) & set(airbyte_connector_urls)
 
-			# urls in the airbyte connector but not in the concise file
-			urls_in_airbyte_connector = set(airbyte_connector_urls) - set(concise_file_urls) 	
+            # urls in the airbyte connector but not in the concise file
+            urls_in_airbyte_connector = set(
+                airbyte_connector_urls) - set(concise_file_urls)
 
-			# update the comparison list and upload to S3
-			comparison_list += f"{connector['name']}:\nCommon endpoints: {common_urls}\nEndpoints in Airbyte only: {urls_in_airbyte_connector}\n\n"
-			upload_object(io.BytesIO(comparison_list.encode('utf-8')), 'airbyte_connectors_comparison.txt')
-			logger.info(f"Updated list for {connector['name']}")
+            # update the comparison list and upload to S3
+            comparison_list += f"{connector['name']}:\nCommon endpoints: {common_urls}\nEndpoints in Airbyte only: {urls_in_airbyte_connector}\n\n"
+            upload_object(io.BytesIO(comparison_list.encode(
+                'utf-8')), 'airbyte_connectors_comparison.txt')
+            logger.info(f"Updated list for {connector['name']}")
 
 
 extract_urls_from_concise_bulk('airbyte_connectors.json')
-

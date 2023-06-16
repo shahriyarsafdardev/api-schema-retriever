@@ -1,3 +1,8 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.firefox.service import Service
 import requests
 from bs4 import BeautifulSoup
 import io
@@ -15,15 +20,6 @@ import time
 from requests.exceptions import HTTPError, InvalidSchema, ConnectTimeout
 
 logger = getLogger()
-
-from selenium.webdriver.firefox.service import Service
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium import webdriver
-from bs4 import BeautifulSoup
-
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 
 
 def get_html_with_selenium(page_url, verbose=False):
@@ -45,29 +41,27 @@ def get_html_with_selenium(page_url, verbose=False):
     # this is where it started to scrap the page
     driver = webdriver.Firefox(service=service, options=options)
 
-
     driver.set_page_load_timeout(30)
 
     try:
         driver.get(page_url)
         time.sleep(5)
-        
+
         logger.info("Page HTML: %s", driver.page_source)
 
         soup = BeautifulSoup(driver.page_source, 'html.parser')
         if verbose:
             logger.info("Page HTML: %s", soup.prettify())
 
-
     except Exception as e:
 
         logger.error("Error parsing HTML: %s", str(e), exc_info=True)
         soup = None
 
-
     driver.quit()
 
     return str(soup)
+
 
 def download_html(page_url, verbose=False):
     try:
@@ -78,7 +72,8 @@ def download_html(page_url, verbose=False):
         # Use Selenium if no links are found in the page.
         if not soup.find_all('a'):
             if verbose:
-                logger.info("No links found on the page: %s. Switching to Selenium.", page_url)
+                logger.info(
+                    "No links found on the page: %s. Switching to Selenium.", page_url)
             soup = get_html_with_selenium(page_url, verbose=verbose)
 
         if verbose:
@@ -87,9 +82,11 @@ def download_html(page_url, verbose=False):
         return str(soup)
 
     except HTTPError as err:
-        if err.response.status_code in (403, 429):  # Forbidden or Too Many Requests
+        # Forbidden or Too Many Requests
+        if err.response.status_code in (403, 429):
             if verbose:
-                logger.info("Switching to Selenium due to HTTP error for: %s", page_url)
+                logger.info(
+                    "Switching to Selenium due to HTTP error for: %s", page_url)
             soup = get_html_with_selenium(page_url, verbose=verbose)
 
             if verbose:
@@ -108,7 +105,8 @@ def download_html(page_url, verbose=False):
 
     except Exception as e:
         if verbose:
-            logger.info("An error occurred when trying to download HTML from: %s. Error: %s. Skipping.", page_url, e)
+            logger.info(
+                "An error occurred when trying to download HTML from: %s. Error: %s. Skipping.", page_url, e)
         return None
 
 
@@ -130,7 +128,8 @@ def extract_linked_urls(html, page_url, verbose=False):
         return set()
 
     # Find all the anchor tags in the HTML and get the href attribute
-    linked_urls = [link.get("href") for link in soup.find_all("a", href=lambda href: href and not href.endswith('.png'))]
+    linked_urls = [link.get("href") for link in soup.find_all(
+        "a", href=lambda href: href and not href.endswith('.png'))]
 
     # Make URLs absolute by joining with the base_url. If the URL is already absolute, it will be returned as is.
     linked_urls = [urljoin(page_url, url) for url in linked_urls if url]
@@ -142,7 +141,8 @@ def extract_linked_urls(html, page_url, verbose=False):
     clean_urls = set()
     for url in linked_urls:
         parsed_url = urlparse(url)
-        clean_url = urlunparse((parsed_url.scheme, parsed_url.netloc, parsed_url.path, "", "", ""))
+        clean_url = urlunparse(
+            (parsed_url.scheme, parsed_url.netloc, parsed_url.path, "", "", ""))
         clean_urls.add(clean_url)
 
     if verbose:
@@ -150,6 +150,7 @@ def extract_linked_urls(html, page_url, verbose=False):
         logger.info(clean_urls)
 
     return clean_urls
+
 
 def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
     """
@@ -179,7 +180,8 @@ def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
                 urls = extract_linked_urls(html, url, verbose=verbose)
 
                 # Saving the HTML content to S3
-                future = executor.submit(upload_object, io.BytesIO(html.encode()), quote(url, safe="")+".html", verbose=verbose)
+                future = executor.submit(upload_object, io.BytesIO(
+                    html.encode()), quote(url, safe="")+".html", verbose=verbose)
 
                 for url in urls:
                     if base_domain_url not in url:  # Exclude URLs outside of the base domain
@@ -188,7 +190,8 @@ def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
                         continue
                     if url in to_scrape_urls:  # Exclude URLs already in the queue to be scraped
                         continue
-                    if (len(scraped_urls)+len(to_scrape_urls)) > 1000:  # Limit the number of URLs to be scraped
+                    # Limit the number of URLs to be scraped
+                    if (len(scraped_urls)+len(to_scrape_urls)) > 1000:
                         continue
 
                     to_scrape_urls.add(url)
@@ -199,6 +202,8 @@ def scrape_domain(page_url, base_domain_url, max_workers=4, verbose=False):
     return scraped_urls
 
 # Function to scrape the URL using scraping bee
+
+
 def scraping_bee_scrapper(url):
     client = ScrapingBeeClient(
         api_key=settings.scraping_bee_api_key)

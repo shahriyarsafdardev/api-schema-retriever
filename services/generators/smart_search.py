@@ -1,6 +1,6 @@
 import logging
 from services.helpers.s3 import read_object
-from services.helpers.json_loader import load_json
+from services.helpers.json_loader import load_connectors
 from urllib.parse import quote, urlparse, urlunparse
 import re
 
@@ -123,7 +123,7 @@ def clean(text):
 
 if __name__ == "__main__":
     logging.info("Starting smart_search.py")
-    connectors = load_json('data/airbyte_connectors.json', local=True)
+    connectors = load_connectors('data/airbyte_connectors.json', local=True)
 
     successful_connectors = 0
 
