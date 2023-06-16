@@ -4,7 +4,7 @@ from logging import getLogger
 from urllib.parse import quote
 from services.generators.connector_files_generator import create_connector_files, slugify
 from services.helpers.pinecone_db import delete_vectors
-from services.helpers.s3 import bucket_name, delete_connector_zip_file, delete_folder, get_connector_zip_file, list_objects, read_object, upload_object
+from services.helpers.s3 import bucket_name, delete_connector_zip_file, delete_folder, delete_object, get_connector_zip_file, list_objects, read_object, upload_object
 from services.scrapers.embedding import embed
 from services.generators.manifest import generate_manifest
 
@@ -43,14 +43,17 @@ def add_connector(connector):
 
 def remove_connector_data(connector_name, base_documentation_url):
     logger.info(f"Removing data for connector : {base_documentation_url}")
-    s3_folder_name = f"source-{slugify(connector_name)}"
-    file_name = f"source-{slugify(connector_name)}.zip"
-    # Delete existing s3 files for the domain
-    delete_folder(s3_folder_name)
+    schema_folder_name = f"source-{slugify(connector_name)}/schemas"
+    zip_file_name = f"source-{slugify(connector_name)}.zip"
+    manifest_file_name = f"source-{slugify(connector_name)}/manifest.yaml"
+    # Delete existing schema files for the domain
+    delete_folder(schema_folder_name)
+    # Delete manifest file
+    delete_object(manifest_file_name)
     # Delete existing vectors for the domain
     delete_vectors({'domain_base_url': base_documentation_url})
     # Delete existing zip url for the domain
-    delete_connector_zip_file(file_name)
+    delete_connector_zip_file(zip_file_name)
     logger.info(f"Removed data for connector : {base_documentation_url} \n")
 
 
