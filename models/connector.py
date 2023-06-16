@@ -6,6 +6,7 @@ from services.generators.connector_files_generator import create_connector_files
 from services.helpers.pinecone_db import delete_vectors
 from services.helpers.s3 import bucket_name, delete_connector_zip_file, delete_folder, get_connector_zip_file, list_objects, read_object, upload_object
 from services.scrapers.embedding import embed
+from services.generators.manifest import generate_manifest
 
 
 logger = getLogger()
@@ -61,4 +62,9 @@ def recreate_connector(connector):
     embed(connector)
     logger.info(
         f"\nGenerated embeddings for connector : {connector['base_url']}")
+    logger.info(
+        f"\nStart generating manifest for connector : {connector['base_url']}")
+    generate_manifest(connector)
+    logger.info(
+        f"\Generated manifest for connector : {connector['base_url']}")
     create_connector_files(connector)
