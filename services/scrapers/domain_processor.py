@@ -1,5 +1,6 @@
 import time
 from services.generators.connector_files_generator import create_connector_files
+from services.generators.manifest import generate_manifest
 from services.helpers.json_loader import load_connectors, save_connectors
 from services.helpers.logger import getLogger
 from services.scrapers.scraper import scrape_domain
@@ -63,6 +64,13 @@ def embed_domain(connector):
     embed(connector)
     time.sleep(5)  # Simulate time-consuming process
     logger.info("Finished embedding")
+
+
+def generate_manifest_file(connector):
+    generate_manifest(connector)
+    logger.info("Running generate_manifest...")
+    time.sleep(5)  # Simulate time-consuming process
+    logger.info("Finished generate_manifest")
 
 
 def generate_connector_files(connector):

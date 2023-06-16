@@ -398,4 +398,5 @@ def main(filename, local=False):
                   "retrievers": retrievers_comparison}, f, indent=4)
 
 
-main('data/airbyte_connectors.json', local=True)
+if __name__ == "__main__":
+    main('data/airbyte_connectors.json', local=True)

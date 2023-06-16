@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request, BackgroundTasks
 from models.connector import page_count, recreate_connector, zip_url
 from services.helpers.logger import getLogger
 from services.helpers.s3 import read_object
-from services.scrapers.domain_processor import PRODUCTION_CONNECTORS_FILE, add_connector_in_json_files, combine_domain, embed_domain, generate_connector_files, scrape_pages, extract_links
+from services.scrapers.domain_processor import PRODUCTION_CONNECTORS_FILE, add_connector_in_json_files, combine_domain, embed_domain, generate_connector_files, generate_manifest_file, scrape_pages, extract_links
 from datetime import datetime
 
 router = APIRouter()
@@ -15,6 +15,7 @@ def process_domain_in_order(connector):
     combine_domain(connector)
     extract_links(connector)
     embed_domain(connector)
+    generate_manifest_file(connector)
     generate_connector_files(connector)
 
 

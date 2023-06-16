@@ -157,7 +157,8 @@ def remove_special_characters(input_string):
 
 
 def predict_request_headers(base_url, domain_base_url, endpoints):
-    ignored_headers = ["Accept-Language", "Authorization", "Content-Type", "User-Agent", "Accept", "Link", "None"]
+    ignored_headers = ["Accept-Language", "Authorization",
+                       "Content-Type", "User-Agent", "Accept", "Link", "None"]
 
     # query = f"Which Headers are required to be present in the request for the apis of this base url's {base_url} endpoints. Return the name of headers in a list if they are required and if no header is required return 'None'"
     query = f"Given the following list of endpoints, which headers should be present in request for these endpoint apis with base url {base_url}. Give me the required headers names separated on comma(,) basis. If no header is required, return None: {str(endpoints[:100])}"
@@ -168,10 +169,13 @@ def predict_request_headers(base_url, domain_base_url, endpoints):
         filtered_headers_list = []
         if ":" in langchain_response:
             formatted_header = re.findall(r"([^,:]+):", langchain_response)
-            headers_list = [header.strip() for header in formatted_header if len(header.strip().split(" ")) == 1]
+            headers_list = [header.strip() for header in formatted_header if len(
+                header.strip().split(" ")) == 1]
         else:
-            headers_list = [header.strip() for header in langchain_response.split(",") if len(header.strip().split(" ")) == 1]
-        filtered_headers_list = [remove_special_characters(header) for header in headers_list if header not in ignored_headers]
+            headers_list = [header.strip() for header in langchain_response.split(
+                ",") if len(header.strip().split(" ")) == 1]
+        filtered_headers_list = [remove_special_characters(
+            header) for header in headers_list if header not in ignored_headers]
 
         return filtered_headers_list
     else:
@@ -179,8 +183,9 @@ def predict_request_headers(base_url, domain_base_url, endpoints):
 
 
 def predict_request_parameters(base_url, domain_base_url, endpoints):
-    ignored_query_params = ["limit","from", "cursor", "email", "name", "api_key", "page", "offset", "None", "per_page"]
-    
+    ignored_query_params = ["limit", "from", "cursor", "email",
+                            "name", "api_key", "page", "offset", "None", "per_page"]
+
     query = f"There are two types of request parameters. One is 'headers'(these parameters are hidden in request headers) and other is 'query'(these parameters are present in the url with '?' and '=' key values) parameters. Ignore the 'header' parameters. What are major query parameters that should be present in request parameter when APIs with this base url: '{base_url}' used to fetch the data. Only give the query parameters names and separate them on the basis of comma(,)"
     # query = f"What are major query parameters that should be present in request parameter when APIs with this base url: '{base_url}' used to fetch the data consider that we are skipping headers parameters and looking for only query parameters"
     langchain_response = get_langchain_response(domain_base_url, query)
@@ -189,11 +194,15 @@ def predict_request_parameters(base_url, domain_base_url, endpoints):
         parameters_list = None
         if ":" in langchain_response:
             formatted_parameters = re.findall(r"([^,:]+):", langchain_response)
-            parameters_list = [parameter.strip() for parameter in formatted_parameters if len(parameter.strip().split(" ")) == 1]
+            parameters_list = [parameter.strip() for parameter in formatted_parameters if len(
+                parameter.strip().split(" ")) == 1]
         else:
-            parameters_list = [parameter.strip() for parameter in langchain_response.split(",") if len(parameter.strip().split(" ")) == 1]
-        params_without_ids = [parameter for parameter in parameters_list if not parameter.endswith('Id') and not parameter.endswith('id')]
-        filtered_parameters_list = [remove_special_characters(parameter) for parameter in params_without_ids if parameter not in ignored_query_params]
+            parameters_list = [parameter.strip() for parameter in langchain_response.split(
+                ",") if len(parameter.strip().split(" ")) == 1]
+        params_without_ids = [parameter for parameter in parameters_list if not parameter.endswith(
+            'Id') and not parameter.endswith('id')]
+        filtered_parameters_list = [remove_special_characters(
+            parameter) for parameter in params_without_ids if parameter not in ignored_query_params]
 
         return filtered_parameters_list
     else:
@@ -223,17 +232,20 @@ def predict_error_handler_block(base_url, domain_base_url):
     if langchain_response == "None":
         return None
 
-    status_codes = [int(code) for code in re.findall(r'\d+', langchain_response)]
+    status_codes = [int(code)
+                    for code in re.findall(r'\d+', langchain_response)]
     error_handler_obj = {
         "type": "CompositeErrorHandler",
         "error_handlers": []
     }
 
     error_handler_updated = any([
-        update_error_handler_object(error_handler_obj, status_codes, [403], "IGNORE"),
-        update_error_handler_object(error_handler_obj, status_codes, [429, 500], "RETRY")
+        update_error_handler_object(
+            error_handler_obj, status_codes, [403], "IGNORE"),
+        update_error_handler_object(
+            error_handler_obj, status_codes, [429, 500], "RETRY")
     ])
-    
+
     if error_handler_updated:
         return error_handler_obj
 
@@ -241,10 +253,14 @@ def predict_error_handler_block(base_url, domain_base_url):
 
 
 def predict_requester_block(connector):
-    base_url = predict_base_url(connector['base_url'], connector['sphere_endpoints'], connector['name'])
-    authenticator = predict_authenticator_block(base_url, connector['base_url'])
-    request_headers = predict_request_headers(base_url, connector['base_url'], connector['sphere_endpoints'])
-    request_parameters = predict_request_parameters(base_url, connector['base_url'], connector['sphere_endpoints'])
+    base_url = predict_base_url(
+        connector['base_url'], connector['sphere_endpoints'], connector['name'])
+    authenticator = predict_authenticator_block(
+        base_url, connector['base_url'])
+    request_headers = predict_request_headers(
+        base_url, connector['base_url'], connector['sphere_endpoints'])
+    request_parameters = predict_request_parameters(
+        base_url, connector['base_url'], connector['sphere_endpoints'])
     # error_handler = predict_error_handler_block(base_url, connector['base_url'])
     requester_block = {
         "type": "HttpRequester",
@@ -256,14 +272,16 @@ def predict_requester_block(connector):
     if request_headers is not None and len(request_headers) > 0:
         header_parameters = {}
         for header in request_headers:
-            header_parameters[header.lower()] = "{{config." + header.lower().replace('-','_') + "}}"
+            header_parameters[header.lower(
+            )] = "{{config." + header.lower().replace('-', '_') + "}}"
 
         requester_block["request_headers"] = header_parameters
 
     if request_parameters is not None and len(request_parameters) > 0:
         request_parameters_block = {}
         for parameter in request_parameters:
-            request_parameters_block[parameter.lower()] = "{{config." + parameter.lower().replace('-','_') + "}}"
+            request_parameters_block[parameter.lower(
+            )] = "{{config." + parameter.lower().replace('-', '_') + "}}"
 
         requester_block["request_parameters"] = request_parameters_block
 
@@ -327,7 +345,8 @@ def extract_airbyte_requester_block(connector_name):
     try:
         data = yaml.safe_load(response.text)
         requester_block = find_airbyte_requester_block(data)
-        consistent_requester_block = normalize_airbyte_requester_block(requester_block)
+        consistent_requester_block = normalize_airbyte_requester_block(
+            requester_block)
         return consistent_requester_block if consistent_requester_block is not None else {}
     except Exception as e:
         return {}
@@ -378,7 +397,7 @@ def main(filename, local=False):
         airbyte_requester_block = extract_airbyte_requester_block(
             connector['name'])
         sphere_requester_block = predict_requester_block(connector)
-        
+
         requester_block_similarity, matches_count, airbyte_block_pair_count = calculate_line_similarity(
             airbyte_requester_block, sphere_requester_block)
         requesters_comparison[connector['name']] = {
@@ -389,7 +408,8 @@ def main(filename, local=False):
 
         total_matches += matches_count
         total_airbyte_block_pair_count += airbyte_block_pair_count
-        logger.info("Processed connector {}: {}".format(idx+1, connector['name']))
+        logger.info("Processed connector {}: {}".format(
+            idx+1, connector['name']))
 
     overall_similarity = (total_matches/total_airbyte_block_pair_count) * \
         100 if total_airbyte_block_pair_count != 0 else total_matches
@@ -399,6 +419,7 @@ def main(filename, local=False):
     with open('data/requesters_comparison.json', 'w') as f:
         json.dump({"overall_similarity": round(overall_similarity, 2),
                   "requesters": requesters_comparison}, f, indent=4)
+
 
 if __name__ == "__main__":
     main('data/airbyte_lowcode_connectors.json', local=True)
