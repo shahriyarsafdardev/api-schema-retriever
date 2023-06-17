@@ -8,6 +8,7 @@ from urllib.parse import quote, urlparse
 from analysis.compare_authentication import get_langchain_response
 from services.helpers.logger import getLogger
 from services.helpers.s3 import read_object, upload_object, bucket_name
+from services.generators.schemas import generate_schemas
 
 logger = getLogger()
 p = inflect.engine()
@@ -73,34 +74,18 @@ def generate_file_name(url):
 
 
 def create_connector_files(connector, schema_objects=None):
-    connectors = json.loads(read_object("airbyte_connectors.json"))
-    short_urls = [obj['sphere_endpoints']
-                  for obj in connectors if obj.get('name') == connector['name']][0]
     logger.info(f"Read short urls from S3 for {connector['name']}")
     logger.info(f"Short urls to generate schema: {connector['name']}")
 
-    if not schema_objects:
-        schema_objects = defaultdict(list)
+    folder_name = f"source-{slugify(connector['name'])}"
 
-    # generate schemas if there are short_urls
-    for idx, short_url in enumerate(short_urls):
+    schema_objects = generate_schemas(
+        connector['name'], connector['base_url'], folder_name)
 
-        endpoint_details = generate_schemas_with_state(
-            connector['base_url'], short_url)
-        if endpoint_details:
-            singular_object = p.singular_noun(
-                endpoint_details['Returned Object'])
-            if not singular_object:
-                singular_object = endpoint_details['Returned Object']
-            schema_objects[singular_object].append(
-                endpoint_details)
-            logger.info(f'Generated schema: {endpoint_details}')
-
-    logger.info('All short urls have been parsed')
+    logger.info('All endpoints have been processed')
 
     if schema_objects:
         # step 3 - upload bulk concise and schema files
-        folder_name = f"source-{slugify(connector['name'])}"
         logger.info('Uploading schemas to S3')
         zip_file_key = f"{folder_name}.zip"
         zip_buffer = io.BytesIO()
